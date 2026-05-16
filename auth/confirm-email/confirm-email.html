@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flora — Confirm Email</title>
+  <link rel="icon" href="../../img/coppy-removebg-preview.png" type="image/png" />
+  <link rel="stylesheet" href="../login/login.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+  <style>
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .auth-form-wrap { animation: fadeSlideIn 0.45s cubic-bezier(0.4,0,0.2,1) both; }
+
+    /* OTP inputs */
+    .otp-row {
+      display: flex; gap: 10px; justify-content: center;
+    }
+    .otp-box {
+      width: 52px; height: 58px;
+      text-align: center;
+      font-size: 1.4rem; font-weight: 700;
+      font-family: var(--font-display);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      outline: none;
+      transition: var(--transition);
+      caret-color: var(--accent);
+    }
+    .otp-box:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(76,175,80,0.15);
+    }
+
+    /* Timer */
+    .timer-wrap {
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+    }
+    .timer-label { font-size: 0.82rem; color: var(--text-muted); }
+    .timer-val {
+      font-family: var(--font-display);
+      font-size: 1.1rem; font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.08em;
+    }
+    .timer-val.expired { color: #ef5350; }
+
+    /* Resend link */
+    .resend-link {
+      color: var(--accent); cursor: pointer;
+      font-size: 0.88rem; font-weight: 500;
+    }
+    .resend-link.disabled {
+      color: var(--text-dim); cursor: not-allowed; pointer-events: none;
+    }
+    .resend-link:hover:not(.disabled) { color: var(--accent2); }
+  </style>
+</head>
+<body>
+
+<div class="auth-layout">
+  <!-- Visual Panel -->
+  <div class="auth-panel auth-visual">
+    <div class="visual-bg" style="background-image:url('../../img/imgplant-care-2.jpg')"></div>
+    <div class="visual-overlay"></div>
+    <div class="visual-content">
+      <img src="../../img/coppy-removebg-preview.png" alt="Flora AI" class="v-logo">
+      <h1 class="v-title" data-en="FLORA" data-ar="فلورا">FLORA</h1>
+      <p class="v-tag" data-en="Confirm your green identity" data-ar="أكد هويتك الخضراء">Confirm your green identity</p>
+      <div class="v-stats">
+        <div class="vs-item"><span class="vs-num">98%</span><span class="vs-label" data-en="Accuracy" data-ar="دقة">Accuracy</span></div>
+        <div class="vs-item"><span class="vs-num">50K+</span><span class="vs-label" data-en="Users" data-ar="مستخدم">Users</span></div>
+        <div class="vs-item"><span class="vs-num">300+</span><span class="vs-label" data-en="Diseases" data-ar="مرض">Diseases</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form Panel -->
+  <div class="auth-panel auth-form-panel">
+    <div class="auth-controls">
+      <button class="ctrl-btn" id="themeToggle">
+        <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <button class="ctrl-btn" id="langToggle"><span id="langLabel">AR</span></button>
+    </div>
+
+    <div class="auth-form-wrap">
+      <a href="../login/login.html" class="back-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        <span data-en="Back to Sign In" data-ar="الرجوع لتسجيل الدخول">Back to Sign In</span>
+      </a>
+
+      <h2 class="form-title" data-en="Check your inbox" data-ar="تحقق من بريدك">Check your inbox</h2>
+      <p class="form-sub" id="formSubText" data-en="We sent a 5-digit code to your email. Enter it below to activate your account." data-ar="أرسلنا رمزاً مكوناً من 5 أرقام إلى بريدك الإلكتروني. أدخله أدناه لتفعيل حسابك.">We sent a 5-digit code to your email. Enter it below to activate your account.</p>
+
+      <form class="auth-form" id="confirmForm">
+        <!-- Timer -->
+        <div class="timer-wrap">
+          <span class="timer-label" data-en="Code expires in:" data-ar="ينتهي الرمز خلال:">Code expires in:</span>
+          <span class="timer-val" id="timerDisplay">05:00</span>
+        </div>
+
+        <!-- OTP boxes -->
+        <div class="otp-row">
+          <input type="text" class="otp-box" maxlength="1" inputmode="numeric" pattern="\d*" />
+          <input type="text" class="otp-box" maxlength="1" inputmode="numeric" pattern="\d*" />
+          <input type="text" class="otp-box" maxlength="1" inputmode="numeric" pattern="\d*" />
+          <input type="text" class="otp-box" maxlength="1" inputmode="numeric" pattern="\d*" />
+          <input type="text" class="otp-box" maxlength="1" inputmode="numeric" pattern="\d*" />
+        </div>
+
+        <button type="submit" class="submit-btn">
+          <span data-en="Verify Account" data-ar="تحقق من الحساب">Verify Account</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        </button>
+
+        <p class="switch-link">
+          <span data-en="Didn't receive the code?" data-ar="لم تستلم الرمز؟">Didn't receive the code?</span>
+          <span id="resendBtn" class="resend-link disabled" data-en="Resend Code" data-ar="إعادة الإرسال">Resend Code</span>
+        </p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+const API_BASE = "http://localhost:3000/api/v1";
+const html = document.documentElement;
+
+// Theme
+const savedTheme = localStorage.getItem('flora-theme') || 'dark';
+html.setAttribute('data-theme', savedTheme);
+document.getElementById('themeToggle').addEventListener('click', () => {
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('flora-theme', next);
+});
+
+// Language
+let lang = localStorage.getItem('flora-lang') || 'en';
+applyLang(lang);
+document.getElementById('langToggle').addEventListener('click', () => {
+  lang = lang === 'en' ? 'ar' : 'en';
+  applyLang(lang);
+  localStorage.setItem('flora-lang', lang);
+});
+function applyLang(l) {
+  html.setAttribute('data-lang', l);
+  html.setAttribute('dir', l === 'ar' ? 'rtl' : 'ltr');
+  document.getElementById('langLabel').textContent = l === 'ar' ? 'EN' : 'AR';
+  document.querySelectorAll('[data-en]').forEach(el => {
+    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') return;
+    el.textContent = l === 'ar' ? (el.dataset.ar || el.dataset.en) : el.dataset.en;
+  });
+}
+
+// Get saved email
+const userEmail = localStorage.getItem('userEmailForVerification');
+if (!userEmail) {
+  // Redirect silently if no email in session
+  window.location.replace('../login/login.html');
+}
+
+// OTP box auto-advance + backspace
+const otpBoxes = document.querySelectorAll('.otp-box');
+otpBoxes.forEach((box, i) => {
+  box.addEventListener('input', (e) => {
+    // Only allow digits
+    box.value = box.value.replace(/\D/g, '');
+    if (box.value && i < otpBoxes.length - 1) otpBoxes[i + 1].focus();
+  });
+  box.addEventListener('keydown', (e) => {
+    if (e.key === 'Backspace' && !box.value && i > 0) otpBoxes[i - 1].focus();
+  });
+  // Handle paste on first box
+  box.addEventListener('paste', (e) => {
+    const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 5);
+    if (pasted.length) {
+      e.preventDefault();
+      pasted.split('').forEach((ch, idx) => {
+        if (otpBoxes[idx]) otpBoxes[idx].value = ch;
+      });
+      const last = Math.min(pasted.length, otpBoxes.length - 1);
+      otpBoxes[last].focus();
+    }
+  });
+});
+
+// Message helper (no alert)
+function setMsg(msg, isSuccess) {
+  let el = document.getElementById('confirmMsg');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'confirmMsg';
+    el.style.cssText = 'padding:11px 14px;border-radius:10px;font-size:0.88rem;margin-bottom:14px;font-weight:500;text-align:center;transition:opacity 0.3s;';
+    const form = document.getElementById('confirmForm');
+    form.insertBefore(el, form.firstChild);
+  }
+  el.style.background = isSuccess ? 'rgba(76,175,80,0.12)' : 'rgba(244,67,54,0.12)';
+  el.style.border     = isSuccess ? '1px solid rgba(76,175,80,0.3)' : '1px solid rgba(244,67,54,0.3)';
+  el.style.color      = isSuccess ? '#a5d6a7' : '#ef9a9a';
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+// Form submit
+document.getElementById('confirmForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const otp = Array.from(otpBoxes).map(b => b.value).join('');
+  if (otp.length < 5) {
+    setMsg(lang === 'ar' ? 'يرجى إدخال الرمز المكون من 5 أرقام كاملاً' : 'Please enter the full 5-digit code', false);
+    return;
+  }
+
+  const btn  = e.target.querySelector('.submit-btn');
+  const span = btn.querySelector('span[data-en]');
+  btn.disabled = true;
+  btn.style.opacity = '0.65';
+  span.textContent = lang === 'ar' ? 'جاري التحقق...' : 'Verifying...';
+
+  try {
+    const res = await fetch(`${API_BASE}/auth/confirm-email`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: userEmail, otp })
+    });
+    const result = await res.json();
+
+    if (res.ok) {
+      localStorage.removeItem('userEmailForVerification');
+      setMsg(
+        lang === 'ar' ? '✅ تم تأكيد البريد الإلكتروني! جاري التحويل...' : '✅ Email confirmed! Redirecting to login...',
+        true
+      );
+      setTimeout(() => { window.location.href = '../login/login.html'; }, 1800);
+    } else {
+      const msg = result.message || '';
+      const friendly = lang === 'ar'
+        ? (msg.includes('expired') ? 'انتهت صلاحية الرمز. اطلب رمزاً جديداً.'
+          : msg.includes('invalid') ? 'رمز غير صحيح، حاول مرة أخرى'
+          : msg || 'حدث خطأ')
+        : (msg.includes('expired') ? 'Code expired. Please resend a new code.'
+          : msg.includes('invalid') ? 'Invalid code. Please try again.'
+          : msg || 'An error occurred');
+      setMsg(friendly, false);
+    }
+  } catch {
+    setMsg(lang === 'ar' ? 'فشل الاتصال بالسيرفر' : 'Cannot connect to server. Is the backend running?', false);
+  } finally {
+    btn.disabled = false;
+    btn.style.opacity = '1';
+    span.textContent = lang === 'ar' ? 'تحقق من الحساب' : 'Verify Account';
+  }
+});
+
+// Resend code
+document.getElementById('resendBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('resendBtn');
+  if (btn.classList.contains('disabled')) return;
+
+  try {
+    const res = await fetch(`${API_BASE}/auth/forget-password`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: userEmail })
+    });
+    if (res.ok) {
+      setMsg(lang === 'ar' ? 'تم إرسال رمز جديد إلى بريدك الإلكتروني' : 'A new code has been sent to your email.', true);
+      resetTimer();
+    } else {
+      setMsg(lang === 'ar' ? 'فشل إعادة الإرسال' : 'Failed to resend code.', false);
+    }
+  } catch {
+    setMsg(lang === 'ar' ? 'خطأ في الاتصال' : 'Connection error.', false);
+  }
+});
+
+// Timer logic
+let timeLeft = 300;
+let countdown;
+
+function startTimer() {
+  countdown = setInterval(() => {
+    const mins = Math.floor(timeLeft / 60);
+    const secs = String(timeLeft % 60).padStart(2, '0');
+    const display = document.getElementById('timerDisplay');
+    display.textContent = `0${mins}:${secs}`;
+
+    if (timeLeft <= 60) display.style.color = '#ef5350';
+
+    if (timeLeft <= 0) {
+      clearInterval(countdown);
+      display.textContent = lang === 'ar' ? 'انتهت الصلاحية' : 'EXPIRED';
+      display.classList.add('expired');
+      document.getElementById('resendBtn').classList.remove('disabled');
+    }
+    timeLeft--;
+  }, 1000);
+}
+
+function resetTimer() {
+  clearInterval(countdown);
+  timeLeft = 300;
+  const display = document.getElementById('timerDisplay');
+  display.style.color = '';
+  display.classList.remove('expired');
+  document.getElementById('resendBtn').classList.add('disabled');
+  startTimer();
+}
+
+startTimer();
+</script>
+</body>
+</html>

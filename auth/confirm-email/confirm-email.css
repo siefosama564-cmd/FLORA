@@ -1,0 +1,202 @@
+/* تعريف المتغيرات الأساسية */
+:root {
+    --primary: #4CAF50;
+    --accent: #81c784;
+    --surface: #1e1e1e;
+    --surface2: #2d2d2d;
+    --border: #3d3d3d;
+    --text: #ffffff;
+    --text-dim: #b0b0b0;
+    --radius: 12px;
+    --transition: all 0.3s ease;
+    --font-display: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+[data-theme="light"] {
+    --surface: #ffffff;
+    --surface2: #f5f5f5;
+    --border: #e0e0e0;
+    --text: #333333;
+    --text-dim: #666666;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: var(--font-display);
+    background-color: var(--surface);
+    color: var(--text);
+}
+
+/* الهيكل الرئيسي */
+.auth-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.auth-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+}
+
+/* الجانب البصري */
+.auth-visual {
+    position: relative;
+    background: #121212;
+    overflow: hidden;
+    color: white;
+}
+
+.visual-bg {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-image: url('https://images.unsplash.com/photo-1545239351-ef056c0b011a?q=80&w=1000&auto=format&fit=crop'); /* صورة بديلة لو لم تتوفر صورتك */
+    background-size: cover;
+    background-position: center;
+    filter: brightness(0.6);
+}
+
+.visual-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(135deg, rgba(76,175,80,0.4) 0%, rgba(0,0,0,0.8) 100%);
+}
+
+.visual-content { position: relative; text-align: center; z-index: 2; }
+.v-logo { width: 80px; margin-bottom: 20px; }
+.v-title { font-size: 3rem; letter-spacing: 5px; margin-bottom: 10px; }
+
+/* فورم الـ OTP */
+.auth-form-panel { background: var(--surface); position: relative; }
+
+.auth-controls {
+    position: absolute;
+    top: 20px; right: 20px;
+    display: flex; gap: 10px;
+}
+
+.ctrl-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.auth-form-wrap { width: 100%; max-width: 400px; }
+
+.back-link {
+    text-decoration: none;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.form-title { font-size: 2rem; margin-bottom: 10px; }
+.form-sub { color: var(--text-dim); margin-bottom: 30px; }
+
+/* المكونات التي طلبتها */
+.otp-container {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin: 30px 0;
+}
+
+.otp-input {
+    width: 55px;
+    height: 65px;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    background: var(--surface2);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    transition: var(--transition);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.otp-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.2);
+    outline: none;
+}
+
+.timer-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 20px;
+    border-radius: var(--radius);
+    text-align: center;
+    margin-bottom: 25px;
+    position: relative;
+    overflow: hidden;
+}
+
+.timer-display {
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--primary);
+    margin: 10px 0;
+    animation: pulse 2s infinite ease-in-out;
+}
+
+.timer-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    background: var(--primary);
+    width: 100%;
+    transition: width 1s linear;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 15px;
+    background: var(--primary);
+    border: none;
+    border-radius: var(--radius);
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    transition: var(--transition);
+}
+
+.submit-btn:hover { filter: brightness(1.1); transform: translateY(-2px); }
+
+.resend-link {
+    color: var(--primary);
+    cursor: pointer;
+    text-decoration: underline;
+    font-weight: 600;
+}
+
+.resend-link.disabled {
+    color: var(--text-dim);
+    cursor: not-allowed;
+    text-decoration: none;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+@media (max-width: 768px) {
+    .auth-layout { flex-direction: column; }
+    .auth-visual { display: none; }
+}
