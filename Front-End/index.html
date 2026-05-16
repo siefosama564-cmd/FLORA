@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flora — AI Plant Disease Detection</title>
+  <link rel="icon" href="img/coppy-removebg-preview.png" type="image/png" />
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+<!-- ════ FLOATING NAV ════ -->
+<nav class="navbar" id="navbar">
+  <div class="nav-logo">
+    <img src="img/coppy-removebg-preview.png" alt="Flora Logo" class="logo-img" />
+    <span class="logo-text" data-en="FLORA" data-ar="فلورا">FLORA</span>
+  </div>
+
+  <ul class="nav-links">
+    <li><a href="#hero" data-en="Home" data-ar="الرئيسية">Home</a></li>
+    <li><a href="#features" data-en="Features" data-ar="المميزات">Features</a></li>
+    <li><a href="#how-it-works" data-en="How It Works" data-ar="كيف يعمل">How It Works</a></li>
+    <li><a href="#gallery" data-en="Gallery" data-ar="المعرض">Gallery</a></li>
+    <li><a href="auth/login/login.html" class="nav-cta" id="navGetStarted" data-en="Get Started" data-ar="ابدأ الآن">Get Started</a></li>
+  </ul>
+
+  <!-- Controls -->
+  <div class="nav-controls">
+    <!-- Features dropdown trigger -->
+    <button class="ctrl-btn" id="featuresBtn" title="Features">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    </button>
+    <!-- Dark mode toggle -->
+    <button class="ctrl-btn" id="themeToggle" title="Toggle Theme">
+      <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <!-- Language toggle -->
+    <button class="ctrl-btn lang-btn" id="langToggle" title="Toggle Language">
+      <span id="langLabel">EN</span>
+    </button>
+  </div>
+
+  <button class="hamburger" id="hamburger">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- Features Dropdown -->
+<div class="features-dropdown" id="featuresDropdown">
+  <div class="fd-inner">
+    <div class="fd-item">
+      <div class="fd-icon">🔬</div>
+      <div>
+        <h4 data-en="AI Disease Detection" data-ar="كشف الأمراض بالذكاء الاصطناعي">AI Disease Detection</h4>
+        <p data-en="Upload a photo and get instant disease diagnosis" data-ar="ارفع صورة واحصل على تشخيص فوري للمرض">Upload a photo and get instant disease diagnosis</p>
+      </div>
+    </div>
+    <div class="fd-item">
+      <div class="fd-icon">💬</div>
+      <div>
+        <h4 data-en="Smart Chat Assistant" data-ar="مساعد دردشة ذكي">Smart Chat Assistant</h4>
+        <p data-en="Ask anything about plant care in text or voice" data-ar="اسأل أي شيء عن رعاية النباتات نصاً أو صوتاً">Ask anything about plant care in text or voice</p>
+      </div>
+    </div>
+    <div class="fd-item">
+      <div class="fd-icon">🎤</div>
+      <div>
+        <h4 data-en="Voice Interaction" data-ar="التفاعل الصوتي">Voice Interaction</h4>
+        <p data-en="Talk to Flora hands-free while tending your garden" data-ar="تكلم فلورا بدون يدين أثناء العناية بحديقتك">Talk to Flora hands-free while tending your garden</p>
+      </div>
+    </div>
+    <div class="fd-item">
+      <div class="fd-icon">📜</div>
+      <div>
+        <h4 data-en="Chat History" data-ar="سجل المحادثات">Chat History</h4>
+        <p data-en="Access all your past diagnoses and conversations" data-ar="الوصول لجميع تشخيصاتك ومحادثاتك السابقة">Access all your past diagnoses and conversations</p>
+      </div>
+    </div>
+    <div class="fd-item">
+      <div class="fd-icon">🌐</div>
+      <div>
+        <h4 data-en="Bilingual Support" data-ar="دعم ثنائي اللغة">Bilingual Support</h4>
+        <p data-en="Full Arabic & English interface support" data-ar="دعم كامل للواجهة بالعربي والإنجليزي">Full Arabic & English interface support</p>
+      </div>
+    </div>
+    <div class="fd-item">
+      <div class="fd-icon">🌙</div>
+      <div>
+        <h4 data-en="Dark & Light Mode" data-ar="الوضع الداكن والفاتح">Dark & Light Mode</h4>
+        <p data-en="Switch between themes for comfortable viewing" data-ar="تبديل بين الأوضاع لراحة العين">Switch between themes for comfortable viewing</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ HERO ════ -->
+<section class="hero" id="hero">
+  <div class="hero-bg">
+    <div class="hero-bg-img" style="background-image:url('img/imgplant-care-1.jpg')"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-particles" id="particles"></div>
+  </div>
+
+  <div class="hero-content">
+    <div class="hero-badge" data-en="AI-Powered Plant Care" data-ar="رعاية النباتات بالذكاء الاصطناعي">AI-Powered Plant Care</div>
+    <h1 class="hero-title">
+      <span class="line1" data-en="Speak to your" data-ar="تحدث مع">Speak to your</span>
+      <span class="line2 gradient-text" data-en="plants." data-ar="نباتاتك.">plants.</span>
+      <span class="line3" data-en="We translate." data-ar="نحن نترجم.">We translate.</span>
+    </h1>
+    <p class="hero-sub" data-en="Flora uses cutting-edge AI to detect plant diseases from a single photo. Chat, diagnose, and heal — instantly." data-ar="فلورا تستخدم أحدث تقنيات الذكاء الاصطناعي للكشف عن أمراض النباتات من صورة واحدة. دردشة، تشخيص، وعلاج - فوراً.">
+      Flora uses cutting-edge AI to detect plant diseases from a single photo. Chat, diagnose, and heal — instantly.
+    </p>
+    <div class="hero-ctas">
+      <a href="auth/login/login.html" class="btn-primary" data-en="Start Diagnosing" data-ar="ابدأ التشخيص">Start Diagnosing</a>
+      <a href="#how-it-works" class="btn-ghost" data-en="See How It Works" data-ar="شاهد كيف يعمل">See How It Works</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-num">98%</span><span class="stat-label" data-en="Accuracy" data-ar="دقة">Accuracy</span></div>
+      <div class="stat-div"></div>
+      <div class="stat"><span class="stat-num">50K+</span><span class="stat-label" data-en="Plants Analyzed" data-ar="نبات محلل">Plants Analyzed</span></div>
+      <div class="stat-div"></div>
+      <div class="stat"><span class="stat-num">300+</span><span class="stat-label" data-en="Disease Types" data-ar="نوع مرض">Disease Types</span></div>
+    </div>
+  </div>
+
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    <span data-en="Scroll" data-ar="اسحب">Scroll</span>
+  </div>
+</section>
+
+<!-- ════ FEATURES ════ -->
+<section class="features-section" id="features">
+  <div class="section-header">
+    <span class="section-tag" data-en="What We Offer" data-ar="ما نقدمه">What We Offer</span>
+    <h2 data-en="Everything your plants need" data-ar="كل ما تحتاجه نباتاتك">Everything your plants need</h2>
+    <p data-en="A full suite of AI tools designed for plant lovers, farmers, and botanists alike." data-ar="مجموعة كاملة من أدوات الذكاء الاصطناعي مصممة لعشاق النباتات والمزارعين وعلماء النبات.">A full suite of AI tools designed for plant lovers, farmers, and botanists alike.</p>
+  </div>
+
+  <div class="features-grid">
+    <div class="feat-card feat-large">
+      <div class="feat-icon">🔬</div>
+      <h3 data-en="Instant Disease Scan" data-ar="فحص فوري للأمراض">Instant Disease Scan</h3>
+      <p data-en="Upload any plant photo. Our vision model identifies diseases, pests, and deficiencies in under 3 seconds." data-ar="ارفع أي صورة نبات. نموذج الرؤية لدينا يحدد الأمراض والآفات والنقص في أقل من 3 ثوانٍ.">Upload any plant photo. Our vision model identifies diseases, pests, and deficiencies in under 3 seconds.</p>
+      <div class="feat-bg" style="background-image:url('img/imgplant-care-4.jpg')"></div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">💬</div>
+      <h3 data-en="Gemma-4 &amp; Gemini Hybrid Intelligence" data-ar="دردشة ذكية مدعومة بجيما 4 وجيميناي">Gemma-4 &amp; Gemini Hybrid Intelligence</h3>
+      <p data-en="Ask questions, get treatment plans, and learn about your plants in real-time." data-ar="اسأل أسئلة، احصل على خطط علاج، وتعلم عن نباتاتك في الوقت الفعلي.">Ask questions, get treatment plans, and learn about your plants in real-time.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🎤</div>
+      <h3 data-en="Voice Mode" data-ar="الوضع الصوتي">Voice Mode</h3>
+      <p data-en="Hands dirty? Just talk. Flora listens and responds while you garden." data-ar="يداك متسختان؟ فقط تكلم. فلورا تستمع وترد بينما تعمل في الحديقة.">Hands dirty? Just talk. Flora listens and responds while you garden.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">📜</div>
+      <h3 data-en="Full Chat History" data-ar="سجل كامل للمحادثات">Full Chat History</h3>
+      <p data-en="Every conversation saved. Track your plant's health journey over time." data-ar="كل محادثة محفوظة. تتبع رحلة صحة نباتك مع مرور الوقت.">Every conversation saved. Track your plant's health journey over time.</p>
+    </div>
+    <div class="feat-card feat-large feat-right">
+      <div class="feat-icon">🌿</div>
+      <h3 data-en="Treatment Recommendations" data-ar="توصيات العلاج">Treatment Recommendations</h3>
+      <p data-en="Get personalized, actionable treatment plans with organic and chemical options tailored to your region." data-ar="احصل على خطط علاج شخصية وقابلة للتنفيذ مع خيارات عضوية وكيميائية مصممة لمنطقتك.">Get personalized, actionable treatment plans with organic and chemical options tailored to your region.</p>
+      <div class="feat-bg" style="background-image:url('img/imgplant-care-5.jpg')"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ HOW IT WORKS ════ -->
+<section class="how-section" id="how-it-works">
+  <div class="section-header">
+    <span class="section-tag" data-en="The Process" data-ar="العملية">The Process</span>
+    <h2 data-en="Three steps to healthy plants" data-ar="ثلاث خطوات لنباتات صحية">Three steps to healthy plants</h2>
+  </div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <div class="step-img"><img src="img/imgplant-care-2.jpg" alt="Upload" /></div>
+      <h3 data-en="Upload a Photo" data-ar="ارفع صورة">Upload a Photo</h3>
+      <p data-en="Take a clear photo of the affected plant part and upload it to Flora's chat interface." data-ar="التقط صورة واضحة للجزء المصاب من النبات وارفعها إلى واجهة دردشة فلورا.">Take a clear photo of the affected plant part and upload it to Flora's chat interface.</p>
+    </div>
+    <div class="step-arrow">→</div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <div class="step-img"><img src="img/imgplant-care-6.jpg" alt="Analyze" /></div>
+      <h3 data-en="AI Analyzes" data-ar="يحلل الذكاء الاصطناعي">AI Analyzes</h3>
+      <p data-en="Our model scans the image, identifies issues, and cross-references a database of 300+ diseases." data-ar="نموذجنا يفحص الصورة ويحدد المشاكل ويقارنها بقاعدة بيانات تضم أكثر من 300 مرض.">Our model scans the image, identifies issues, and cross-references a database of 300+ diseases.</p>
+    </div>
+    <div class="step-arrow">→</div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <div class="step-img"><img src="img/imgplant-care-7.jpg" alt="Heal" /></div>
+      <h3 data-en="Get Your Plan" data-ar="احصل على خطتك">Get Your Plan</h3>
+      <p data-en="Receive a detailed diagnosis report and a step-by-step treatment guide instantly." data-ar="احصل على تقرير تشخيص مفصل ودليل علاج خطوة بخطوة فوراً.">Receive a detailed diagnosis report and a step-by-step treatment guide instantly.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════ GALLERY ════ -->
+<section class="gallery-section" id="gallery">
+  <div class="section-header">
+    <span class="section-tag" data-en="Gallery" data-ar="المعرض">Gallery</span>
+    <h2 data-en="The world of plants" data-ar="عالم النباتات">The world of plants</h2>
+  </div>
+  <div class="gallery-grid">
+    <div class="g-item g1"><img src="img/imgplant-care-1.jpg" alt="Plant 1" /></div>
+    <div class="g-item g2"><img src="img/imgplant-care-2.jpg" alt="Plant 2" /></div>
+    <div class="g-item g3"><img src="img/imgplant-care-3.jpg" alt="Plant 3" /></div>
+    <div class="g-item g4"><img src="img/imgplant-care-4.jpg" alt="Plant 4" /></div>
+    <div class="g-item g5"><img src="img/imgplant-care-5.jpg" alt="Plant 5" /></div>
+    <div class="g-item g6"><img src="img/imgplant-care-6.jpg" alt="Plant 6" /></div>
+    <div class="g-item g7"><img src="img/imgplant-care-7.jpg" alt="Plant 7" /></div>
+  </div>
+</section>
+
+<!-- ════ CTA BANNER ════ -->
+<section class="cta-section">
+  <div class="cta-inner">
+    <h2 data-en="Ready to heal your plants?" data-ar="مستعد لشفاء نباتاتك؟">Ready to heal your plants?</h2>
+    <p data-en="Join thousands of plant lovers who trust Flora for instant, accurate diagnoses." data-ar="انضم لآلاف عشاق النباتات الذين يثقون في فلورا للحصول على تشخيصات فورية ودقيقة.">Join thousands of plant lovers who trust Flora for instant, accurate diagnoses.</p>
+    <div class="cta-btns">
+      <a href="auth/signup/signup.html" class="btn-primary" id="ctaPrimary" data-en="Create Free Account" data-ar="أنشئ حساباً مجانياً">Create Free Account</a>
+      <a href="auth/login/login.html" class="btn-ghost" id="ctaSecondary" data-en="Sign In" data-ar="تسجيل الدخول">Sign In</a>
+    </div>
+  </div>
+</section>
+
+<!-- ════ FOOTER ════ -->
+<footer class="footer">
+  <div class="footer-top">
+    <div class="footer-brand">
+      <img src="img/coppy-removebg-preview.png" alt="Flora" class="footer-logo" />
+      <p data-en="AI-Based Plant Disease Detection. Empowering growers with intelligent diagnostics." data-ar="كشف أمراض النباتات بالذكاء الاصطناعي. تمكين المزارعين بالتشخيص الذكي.">AI-Based Plant Disease Detection. Empowering growers with intelligent diagnostics.</p>
+    </div>
+    <div class="footer-links">
+      <h4 data-en="Product" data-ar="المنتج">Product</h4>
+      <a href="#features" data-en="Features" data-ar="المميزات">Features</a>
+      <a href="auth/login/login.html" data-en="Login" data-ar="تسجيل الدخول">Login</a>
+      <a href="auth/signup/signup.html" data-en="Sign Up" data-ar="إنشاء حساب">Sign Up</a>
+    </div>
+    <div class="footer-links">
+      <h4 data-en="Support" data-ar="الدعم">Support</h4>
+      <a href="#" data-en="FAQ" data-ar="الأسئلة الشائعة">FAQ</a>
+      <a href="#" data-en="Contact" data-ar="اتصل بنا">Contact</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p data-en="© 2026 Flora. All rights reserved." data-ar="© 2026 فلورا. جميع الحقوق محفوظة.">© 2026 Flora. All rights reserved.</p>
+  </div>
+</footer>
+
+<script src="file.js"></script>
+<script>
+// ── Auth-aware CTA buttons ───────────────────────────────────────
+// If user is logged in (valid token exists), hide the Sign In /
+// Create Free Account buttons. No layout change — only visibility.
+(function() {
+  function isTokenValid(token) {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return (payload.exp * 1000) > Date.now();
+    } catch { return false; }
+  }
+  const token = localStorage.getItem('token');
+  if (token && isTokenValid(token)) {
+    const primary   = document.getElementById('ctaPrimary');
+    const secondary = document.getElementById('ctaSecondary');
+    if (primary)   primary.style.display   = 'none';
+    if (secondary) secondary.style.display = 'none';
+  }
+})();
+</script>
+</body>
+</html>

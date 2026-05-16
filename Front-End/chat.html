@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flora — AI Chat</title>
+  <link rel="icon" href="img/coppy-removebg-preview.png" type="image/png" />
+  <link rel="stylesheet" href="chat.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">
+      <img src="img/coppy-removebg-preview.png" alt="Flora">
+      <span data-en="FLORA" data-ar="فلورا">FLORA</span>
+    </div>
+    <button class="sidebar-close" id="sidebarClose">✕</button>
+  </div>
+
+  <button class="new-chat-btn" id="newChatBtn">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    <span data-en="New Chat" data-ar="محادثة جديدة">New Chat</span>
+  </button>
+
+  <div class="history-label" data-en="Chat History" data-ar="سجل المحادثات">Chat History</div>
+
+  <div class="history-list" id="historyList">
+    <!-- Populated dynamically by chat.js -->
+  </div>
+
+  <div class="sidebar-footer">
+    <button class="sf-btn" id="themeToggle">
+      <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <span data-en="Theme" data-ar="المظهر">Theme</span>
+    </button>
+    <button class="sf-btn" id="langToggle">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      <span id="langLabel">AR</span>
+    </button>
+    <a href="index.html" class="sf-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      <span data-en="Home" data-ar="الرئيسية">Home</span>
+    </a>
+  </div>
+</aside>
+
+<main class="chat-main" id="chatMain">
+
+  <header class="chat-header">
+    <button class="hist-toggle" id="histToggle" title="Chat History">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="chat-header-title">
+      <img src="img/coppy-removebg-preview.png" alt="Flora" class="ch-logo" />
+      <div>
+        <span class="ch-name">Flora AI</span>
+        <span class="ch-status">
+          <span class="status-dot"></span>
+          <span data-en="Online · Plant Expert" data-ar="متصل · خبير نباتات">Online · Plant Expert</span>
+        </span>
+      </div>
+    </div>
+    <div class="chat-header-actions">
+      <button class="ch-btn" id="themeToggle2" title="Toggle Theme">
+        <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <button class="ch-btn" id="langToggle2" title="Language">
+        <span id="langLabel2">AR</span>
+      </button>
+      <button class="ch-btn" id="headerLogoutBtn" title="Logout" style="color:#e57373;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="messages" id="messages">
+    <!-- Welcome messages injected by chat.js on load -->
+  </div>
+
+  <div class="suggestions" id="suggestions">
+    <button class="suggestion-chip" data-en="Upload a plant photo" data-ar="ارفع صورة نبات">Upload a plant photo</button>
+    <button class="suggestion-chip" data-en="How to water succulents?" data-ar="كيف تسقي النباتات العصارية؟">How to water succulents?</button>
+    <button class="suggestion-chip" data-en="Signs of overwatering" data-ar="علامات الإفراط في الري">Signs of overwatering</button>
+    <button class="suggestion-chip" data-en="Best fertilizer for tomatoes" data-ar="أفضل سماد للطماطم">Best fertilizer for tomatoes</button>
+  </div>
+
+  <div class="input-area">
+    <div class="img-preview-area" id="imgPreviewArea" style="display:none">
+      <div class="img-preview-inner" id="imgPreviewInner"></div>
+    </div>
+
+    <div class="input-box">
+      <label class="input-btn upload-btn" title="Upload Image" for="fileInput">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/>
+          <polyline points="21 15 16 10 5 21"/>
+        </svg>
+        <input type="file" id="fileInput" accept="image/*" style="display:none" />
+      </label>
+
+      <textarea class="msg-input" id="msgInput" placeholder="Ask Flora about your plants..." rows="1"></textarea>
+
+      <button class="input-btn voice-btn" id="voiceBtn" title="Voice Input">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/>
+          <line x1="8" y1="23" x2="16" y2="23"/>
+        </svg>
+      </button>
+
+      <button class="input-btn send-btn" id="sendBtn" title="Send">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="input-footer">
+      <span data-en="Flora may make mistakes. Always consult an agricultural expert for serious diseases."
+            data-ar="فلورا قد تخطئ. استشر دائماً خبيراً زراعياً للأمراض الخطيرة.">
+        Flora may make mistakes. Always consult an agricultural expert for serious diseases.
+      </span>
+    </div>
+  </div>
+</main>
+
+<!-- translations.js MUST load before chat.js -->
+<script src="translations.js"></script>
+<script src="chat.js"></script>
+</body>
+</html>
