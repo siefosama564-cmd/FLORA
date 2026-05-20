@@ -698,3 +698,336 @@ section { padding: 100px 40px; }
   color: #1b5e20;
   background: rgba(46, 125, 50, 0.14);
 }
+
+/* ════════════════════════════════════════════════════════════════
+   PHASE 3 — New Section Styles
+   ════════════════════════════════════════════════════════════════ */
+
+/* ── How It Works: new horizontal timeline layout ── */
+.steps-new {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0;
+  flex-wrap: wrap;
+}
+.step-new {
+  flex: 1;
+  min-width: 180px;
+  max-width: 200px;
+  text-align: center;
+  padding: 0 8px;
+  position: relative;
+}
+.step-new-icon {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 12px;
+  color: var(--accent);
+  transition: var(--transition);
+  position: relative; z-index: 1;
+}
+.step-new:hover .step-new-icon {
+  border-color: var(--accent);
+  background: rgba(76,175,80,0.08);
+  box-shadow: 0 0 24px rgba(76,175,80,0.2);
+  transform: translateY(-3px);
+}
+.step-new-num {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  opacity: 0.6;
+  margin-bottom: 8px;
+}
+.step-new h3 {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+.step-new p {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  line-height: 1.65;
+}
+
+/* connector between steps */
+.step-connector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 30px;
+  flex-shrink: 0;
+  width: 40px;
+}
+.step-connector-line {
+  width: 36px; height: 2px;
+  background: linear-gradient(90deg, var(--accent) 0%, transparent 100%);
+  opacity: 0.3;
+  margin-bottom: 4px;
+}
+.step-connector-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.4;
+}
+
+/* RTL connector */
+[dir="rtl"] .step-connector-line {
+  background: linear-gradient(270deg, var(--accent) 0%, transparent 100%);
+}
+
+/* ── Feature extras row ── */
+.feat-extras {
+  max-width: 1200px;
+  margin: 32px auto 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.feat-extra-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 18px;
+  transition: var(--transition);
+}
+.feat-extra-item:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+.feat-extra-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.feat-extra-item h4 {
+  font-size: 0.88rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+  font-family: var(--font-display);
+}
+.feat-extra-item p {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* ── Disease Library Grid ── */
+.disease-lib-section { background: var(--bg2); }
+.disease-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.disease-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+}
+.disease-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-green);
+}
+.disease-img-wrap {
+  position: relative;
+  height: 180px;
+  overflow: hidden;
+}
+.disease-img-wrap img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+.disease-card:hover .disease-img-wrap img { transform: scale(1.06); }
+.disease-badge {
+  position: absolute;
+  top: 12px; right: 12px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  backdrop-filter: blur(8px);
+}
+[dir="rtl"] .disease-badge { right: auto; left: 12px; }
+.disease-badge--warn {
+  background: rgba(239,108,0,0.85);
+  color: #fff;
+}
+.disease-badge--ok {
+  background: rgba(56,142,60,0.9);
+  color: #fff;
+}
+.disease-info { padding: 20px 22px 22px; flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.disease-info h4 {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+}
+.disease-info p {
+  color: var(--text-muted);
+  font-size: 0.83rem;
+  line-height: 1.65;
+  flex: 1;
+}
+.disease-crops {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  margin-top: 4px;
+}
+.disease-crops span {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 3px 10px;
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* CTA card in disease grid */
+.disease-card--cta {
+  background: linear-gradient(135deg, rgba(76,175,80,0.08) 0%, rgba(56,142,60,0.04) 100%);
+  border-color: rgba(76,175,80,0.25);
+  align-items: center;
+  justify-content: center;
+}
+.disease-cta-inner {
+  padding: 36px 28px;
+  text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+}
+.disease-cta-icon { font-size: 2.8rem; line-height: 1; }
+.disease-cta-inner h4 {
+  font-family: var(--font-display);
+  font-size: 1.2rem; font-weight: 700;
+}
+.disease-cta-inner p { color: var(--text-muted); font-size: 0.88rem; line-height: 1.6; }
+.disease-cta-btn {
+  margin-top: 8px;
+  display: inline-block;
+  padding: 12px 28px;
+  font-size: 0.9rem;
+}
+
+/* Healthy card accent */
+.disease-card--healthy { border-color: rgba(76,175,80,0.3); }
+.disease-card--healthy .disease-info h4 { color: var(--accent); }
+
+/* ════════════════════════════════════════════════════════════════
+   LIGHT MODE — Comprehensive Fixes
+   ════════════════════════════════════════════════════════════════ */
+
+/* Disease library in light mode */
+[data-theme="light"] .disease-card {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+[data-theme="light"] .disease-card:hover {
+  box-shadow: 0 8px 24px rgba(46,125,50,0.15);
+}
+[data-theme="light"] .disease-badge--warn { background: rgba(230,81,0,0.9); }
+[data-theme="light"] .disease-card--cta {
+  background: linear-gradient(135deg, rgba(76,175,80,0.06) 0%, rgba(46,125,50,0.03) 100%);
+}
+
+/* Feature cards in light mode */
+[data-theme="light"] .feat-card {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+[data-theme="light"] .feat-card:hover {
+  box-shadow: 0 8px 28px rgba(46,125,50,0.15);
+}
+[data-theme="light"] .feat-extra-item {
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+/* How It Works step icons in light mode */
+[data-theme="light"] .step-new-icon {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+[data-theme="light"] .step-new:hover .step-new-icon {
+  box-shadow: 0 4px 16px rgba(46,125,50,0.2);
+}
+
+/* Hero overlay: lighter in light mode for better photo visibility */
+[data-theme="light"] .hero-overlay {
+  background: linear-gradient(
+    135deg,
+    rgba(240,255,240,0.82) 0%,
+    rgba(200,230,200,0.55) 50%,
+    rgba(180,220,180,0.2) 100%
+  );
+}
+
+/* Section backgrounds in light mode */
+[data-theme="light"] .how-section { background: #f9fdf9; }
+[data-theme="light"] .features-section,
+[data-theme="light"] .disease-lib-section { background: #f1f8f1; }
+
+/* Navbar in light mode */
+[data-theme="light"] .navbar {
+  background: rgba(255,255,255,0.92);
+  border-bottom-color: rgba(46,125,50,0.12);
+}
+
+/* CTA section in light mode */
+[data-theme="light"] .cta-section {
+  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+}
+[data-theme="light"] .cta-section h2 { color: #1b5e20; }
+[data-theme="light"] .cta-section p  { color: #2e7d32; }
+[data-theme="light"] .cta-section .btn-ghost {
+  border-color: rgba(46,125,50,0.5);
+  color: #2e7d32;
+}
+[data-theme="light"] .cta-section .btn-ghost:hover {
+  background: rgba(46,125,50,0.1);
+  border-color: #2e7d32;
+}
+
+/* Stats in light mode */
+[data-theme="light"] .hero-stats { color: #2e7d32; }
+[data-theme="light"] .stat-div { background: rgba(46,125,50,0.2); }
+
+/* Footer in light mode */
+[data-theme="light"] .footer {
+  background: #f1f8f1;
+  border-top: 1px solid rgba(46,125,50,0.12);
+}
+
+/* ── Responsive: new sections ── */
+@media (max-width: 900px) {
+  .steps-new { gap: 0; }
+  .step-connector { display: none; }
+  .step-new { min-width: 140px; }
+  .feat-extras { grid-template-columns: repeat(2, 1fr); }
+  .disease-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  .steps-new { flex-direction: column; align-items: center; }
+  .step-new { max-width: 320px; width: 100%; }
+  .feat-extras { grid-template-columns: 1fr; }
+  .disease-grid { grid-template-columns: 1fr; }
+}

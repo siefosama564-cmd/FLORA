@@ -31,9 +31,27 @@ function applyLang(lang) {
   html.setAttribute('data-lang', lang);
   html.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
   if (langLabel) langLabel.textContent = lang === 'en' ? 'AR' : 'EN';
+
   document.querySelectorAll('[data-en]').forEach(el => {
-    el.textContent = lang === 'ar' ? (el.dataset.ar || el.dataset.en) : el.dataset.en;
+    // Skip inputs, textareas, selects — they have values, not text content
+    if (['INPUT','TEXTAREA','SELECT'].includes(el.tagName)) return;
+    // Skip elements that contain child elements (buttons with SVG, etc.)
+    // Only update if the element's direct text is the translatable content
+    const hasChildElements = Array.from(el.children).some(ch =>
+      !['BR','SPAN','STRONG','EM','B','I','MARK'].includes(ch.tagName)
+    );
+    if (hasChildElements) return;
+    const translated = lang === 'ar' ? (el.dataset.ar || el.dataset.en) : el.dataset.en;
+    if (translated !== undefined) el.textContent = translated;
   });
+
+  // Sync placeholder text on inputs that have data-en-placeholder
+  document.querySelectorAll('[data-en-placeholder]').forEach(el => {
+    el.placeholder = lang === 'ar'
+      ? (el.dataset.arPlaceholder || el.dataset.enPlaceholder)
+      : el.dataset.enPlaceholder;
+  });
+
   // Re-apply auth state text after language switch
   updateAuthUI();
 }
@@ -98,7 +116,7 @@ const observer = new IntersectionObserver((entries) => {
   });
 }, observerOptions);
 
-document.querySelectorAll('.feat-card, .step, .g-item').forEach(el => {
+document.querySelectorAll('.feat-card, .step, .step-new, .disease-card, .feat-extra-item').forEach(el => {
   el.style.opacity = '0';
   el.style.transform = 'translateY(30px)';
   el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
