@@ -51,9 +51,9 @@ export const create = async ({
     model,
     data =[{}],
     options={validateBeforeSave:true}
-
 }={}) => {
-    return await model.create(data,options)
+    const docs = Array.isArray(data) ? data : [data];
+    return await model.create(docs,options)
 }
 
 

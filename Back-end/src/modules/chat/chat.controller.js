@@ -95,23 +95,46 @@ function streamTextAsSSE(res, text, onDone) {
 }
 
 router.post("/ask", authentication(), chatUpload.single("image"), async (req, res) => {
+    console.log("\n[chat.controller] === New /ask Request ===");
+    console.log("[chat.controller] User ID:", req.user?._id);
+    console.log("[chat.controller] Body keys:", Object.keys(req.body || {}));
+    console.log("[chat.controller] Message length:", req.body?.message?.length || 0);
+
     const userId = req.user?._id;
-    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+    if (!userId) {
+        console.warn("[chat.controller] ❌ Unauthorized: No userId found");
+        return res.status(401).json({ message: "Unauthorized" });
+    }
 
     const { message, conversationId } = req.body;
     const lang = detectLanguage(message);
     const plantContext = req.body.plantContext ? (typeof req.body.plantContext === "string" ? JSON.parse(req.body.plantContext) : req.body.plantContext) : null;
+    
+    console.log("[chat.controller] File uploaded:", req.file ? {
+        fieldname: req.file.fieldname,
+        originalname: req.file.originalname,
+        mimetype: req.file.mimetype,
+        size: req.file.size
+    } : "None");
+
     const dbHistory = await fetchConversationHistory(conversationId, userId);
 
     if (req.file) {
         commitSSEHeaders(res);
         try {
+            console.log("[chat.controller] Calling processPlantAnalysis...");
             const result = await processPlantAnalysis({ imageBuffer: req.file.buffer, mimeType: req.file.mimetype, userQuestion: message, lang, res });
             const fullRes = `🌿 **${result.plant || result.final_plant}** — ${result.disease || result.final_disease}\n\n${result.explanation}`;
+            
+            console.log("[chat.controller] Streaming response to client via SSE...");
             streamTextAsSSE(res, fullRes, () => {
+                console.log("[chat.controller] Saving bot/user message to DB...");
                 saveMessages(userId, conversationId, message, fullRes);
             });
-        } catch (err) { sseDone(res); }
+        } catch (err) {
+            console.error("[chat.controller] ❌ Error in image pipeline:", err.message);
+            sseDone(res);
+        }
         return;
     }
 

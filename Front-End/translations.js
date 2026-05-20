@@ -24,6 +24,7 @@ window.FLORA_T = {
         archive:             "Archive",
         unarchive:           "Unarchive",
         delete:              "Delete",
+        deleteMessage:       "Delete message",
 
         /* ── Buttons / Controls ── */
         stop:                "Stop",
@@ -86,6 +87,7 @@ window.FLORA_T = {
         archive:             "أرشفة",
         unarchive:           "إلغاء الأرشفة",
         delete:              "حذف",
+        deleteMessage:       "حذف الرسالة",
 
         /* ── Buttons / Controls ── */
         stop:                "إيقاف",

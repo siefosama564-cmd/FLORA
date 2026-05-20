@@ -1,0 +1,17 @@
+{
+  "model_name": "FLORA_EfficientNetV2B3",
+  "num_classes": 38,
+  "image_size": 224,
+  "input_shape": [
+    224,
+    224,
+    3
+  ],
+  "confidence_threshold_clean": 0.7,
+  "confidence_threshold_realworld": 0.45,
+  "preprocessing": "BUILT-IN \u2014 pass raw uint8 pixels (0-255), do NOT rescale",
+  "background_removal": "run rembg BEFORE predict() for real-world photos",
+  "class_names_file": "class_names.json",
+  "best_val_accuracy": 0.979911208152771,
+  "dataset": "New Plant Diseases Dataset (PlantVillage) \u2014 38 classes"
+}
