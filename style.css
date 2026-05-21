@@ -1031,3 +1031,70 @@ section { padding: 100px 40px; }
   .feat-extras { grid-template-columns: 1fr; }
   .disease-grid { grid-template-columns: 1fr; }
 }
+
+/* ════════════════════════════════════════════════════════════════
+   LIGHT MODE — Final Gaps (Phase 5)
+   ════════════════════════════════════════════════════════════════ */
+
+/* Hero image: brighter in light mode */
+[data-theme="light"] .hero-bg-img {
+  filter: brightness(0.55) saturate(0.9);
+}
+
+/* Section header text: darker for contrast */
+[data-theme="light"] .section-tag {
+  color: #2e7d32;
+  border-color: rgba(46,125,50,0.3);
+  background: rgba(46,125,50,0.08);
+}
+[data-theme="light"] .section-header h2 { color: #1b5e20; }
+[data-theme="light"] .section-header p   { color: #4a7a4a; }
+
+/* Step new: text contrast */
+[data-theme="light"] .step-new h3 { color: #1b5e20; }
+[data-theme="light"] .step-new p  { color: #4a7a4a; }
+[data-theme="light"] .step-new-num { color: #2e7d32; }
+[data-theme="light"] .step-connector-line  { background: linear-gradient(90deg, #2e7d32 0%, transparent 100%); opacity: 0.25; }
+[data-theme="light"] .step-connector-dot   { background: #2e7d32; }
+
+/* Feature cards: text */
+[data-theme="light"] .feat-card h3     { color: #1b5e20; }
+[data-theme="light"] .feat-card p      { color: #4a7a4a; }
+[data-theme="light"] .feat-extra-item h4 { color: #1b5e20; }
+[data-theme="light"] .feat-icon { color: #2e7d32; }
+
+/* Disease library: text */
+[data-theme="light"] .disease-info h4  { color: #1b5e20; }
+[data-theme="light"] .disease-info p   { color: #4a7a4a; }
+[data-theme="light"] .disease-crops span {
+  background: rgba(46,125,50,0.06);
+  border-color: rgba(46,125,50,0.18);
+  color: #2e7d32;
+}
+[data-theme="light"] .disease-card--healthy .disease-info h4 { color: #1b5e20; }
+[data-theme="light"] .disease-cta-inner h4 { color: #1b5e20; }
+[data-theme="light"] .disease-cta-inner p  { color: #4a7a4a; }
+
+/* Feat extras: bg */
+[data-theme="light"] .feat-extras .feat-extra-item { background: #fff; }
+[data-theme="light"] .feat-extra-item p { color: #4a7a4a; }
+
+/* Footer light mode */
+[data-theme="light"] .footer-bottom {
+  background: rgba(46,125,50,0.04);
+  border-top-color: rgba(46,125,50,0.1);
+}
+[data-theme="light"] .footer-links a:hover { color: #1b5e20; }
+
+/* Hero title: readable in light mode */
+[data-theme="light"] .hero-title    { text-shadow: 0 2px 20px rgba(255,255,255,0.3); }
+[data-theme="light"] .hero-sub      { color: rgba(26,46,26,0.85); }
+[data-theme="light"] .hero-eyebrow  { color: rgba(46,125,50,0.9); }
+
+/* btn-primary in light mode on CTA */
+[data-theme="light"] .btn-primary { box-shadow: 0 4px 16px rgba(46,125,50,0.25); }
+
+/* Scroll animations: ensure they fire for new sections */
+[data-theme="light"] .step-connector-line {
+  opacity: 0.25;
+}
