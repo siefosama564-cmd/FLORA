@@ -1,10 +1,5 @@
 /**
  * FLORA — Hybrid AI Service (3-Layer Pipeline)
- * FIXES v3:
- *   ✅ Gemini endpoint: /v1beta/ → /v1/ (fixes 404 errors)
- *   ✅ Model order: gemini-1.5-flash first (most stable free tier)
- *   ✅ Timeout: reads AI_TIMEOUT from .env (90s default)
- *   ✅ Fallback never shows empty fields
  */
 
 import axios from "axios";
@@ -14,12 +9,6 @@ const GEMMA_BASE_URL = process.env.GEMMA_BASE_URL || "http://localhost:1234/v1";
 const GEMMA_MODEL    = process.env.GEMMA_MODEL    || "gemma-3-4b-it";
 const GEMMA_TIMEOUT  = parseInt(process.env.AI_TIMEOUT) || 90_000;
 
-function _sseEvent(res, payload) {
-    if (res && !res.writableEnded) {
-        try { res.write(`data: ${JSON.stringify(payload)}\n\n`); } catch (_) {}
-    }
-}
-
 // ══════════════════════════════════════════════════════════════════════════════
 // LAYER 1 — CNN Model Client
 // ══════════════════════════════════════════════════════════════════════════════
@@ -28,15 +17,12 @@ export async function predictPlantDisease(imageBuffer) {
     const formData = new FormData();
     formData.append("image", new Blob([imageBuffer]), "plant.jpg");
 
-    // Use 127.0.0.1 to avoid Node.js 18+ IPv6 vs IPv4 localhost resolution conflicts
     const url = process.env.AI_ENGINE_URL || "http://127.0.0.1:5000/predict";
     console.log(`[CNN Client] Sending image to ${url}...`);
     
     try {
         const response = await axios.post(url, formData, {
             timeout: 25_000
-            // Note: Content-Type is intentionally omitted so Axios automatically sets
-            // the header along with the correct multipart boundary.
         });
 
         console.log("[CNN Client] ✅ Response received successfully:", response.data);
@@ -65,7 +51,6 @@ export async function analyzeWithGemini(imageBuffer, mimeType, cnnResult) {
 
     const safeMime = (mimeType === "image/jpg") ? "image/jpeg" : mimeType;
 
-    // ✅ /v1/ أولاً — أكثر استقراراً وأقل 404
     const ENDPOINTS = [
         { url: "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent",        label: "gemini-1.5-flash (v1)"       },
         { url: "https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent",        label: "gemini-2.0-flash (v1)"       },
@@ -106,7 +91,7 @@ Return ONLY this JSON (no markdown, no extra text):
     let lastError = null;
 
     for (const { url, label } of ENDPOINTS) {
-        const endpoint    = `${url}?key=${GEMINI_API_KEY}`;
+        const endpoint = `${url}?key=${GEMINI_API_KEY}`;
         const requestBody = {
             contents: [{
                 parts: [
@@ -179,34 +164,73 @@ function _extractGeminiFields(text) {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════════════════════════════════════════
+export function stripTreatmentSections(text) {
+    if (!text) return "";
+    let cleaned = text
+        .replace(/\(هل تحب أن تعرف إزاي تعالجه\؟\)/g, "")
+        .replace(/هل تحب أن تعرف إزاي تعالجه\؟/g, "")
+        .replace(/\(Would you like to know how to treat it\?\)/gi, "")
+        .replace(/Would you like to know how to treat it\?/gi, "")
+        .replace(/كيفية العلاج/g, "")
+        .replace(/طرق العلاج/g, "")
+        .trim();
+    return cleaned;
+}
+
+export function ensureTreatmentQuestion(text, lang) {
+    if (!text) return "";
+    const questionAr = "(هل تحب أن تعرف إزاي تعالجه؟)";
+    const questionEn = "(Would you like to know how to treat it?)";
+    const target = lang === "ar" ? questionAr : questionEn;
+    
+    if (text.includes("تعالجه") || text.includes("treat it")) {
+        return text;
+    }
+    return `${text}\n\n${target}`;
+}
+
+function isEnglishText(text) {
+    if (!text) return false;
+    const arabicChars = (text.match(/[\u0600-\u06FF\u0750-\u077F]/g) || []).length;
+    const latinChars  = (text.match(/[a-zA-Z]/g) || []).length;
+    return latinChars > arabicChars && latinChars > 15;
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
 // LAYER 3 — Gemma-4 via LM Studio
 // ══════════════════════════════════════════════════════════════════════════════
 export async function refineWithGemma(geminiResult, userQuestion = "", lang = "ar") {
     const isArabic  = lang === "ar";
     const isHealthy = geminiResult.final_disease.toLowerCase().includes("healthy");
 
+    const plantAr = getArabicPlant(geminiResult.final_plant);
+    const diseaseAr = getArabicDisease(geminiResult.final_disease);
+
     const systemRole = isArabic
-        ? `أنت "فلورا" — مساعد زراعي متخصص وذكي.
-قواعد الرد:
-1. رحّب بالمستخدم بشكل لطيف وودي للغاية بلهجة مصرية بسيطة وسهلة الفهم.
-2. أخبر المستخدم باسم نباته وحالته (سواء كان سليماً أو مريضاً بالمرض المحدد).
-3. اشرح المرض ومعلومات عامة عنه بأسلوب بسيط، دافئ ومفهوم جداً للمستخدم العادي (بدون تعقيدات علمية).
-4. تنبيه هام جداً: لا تذكر خطوات أو تفاصيل العلاج الإجرائية (مثل استخدام مبيدات أو قطع أوراق... إلخ) في هذا الرد أبداً!
-5. في نهاية الرد تماماً، يجب أن تطرح هذا السؤال التفاعلي حرفياً كما هو بين القوسين: (هل تحب أن تعرف إزاي تعالجه؟).
-6. ممنوع استخدام كلمات مثل "يا حبيبي"، وممنوع خلط اللغات.`
+        ? `أنت "فلورا" — خبيرة زراعية مصرية ذكية وودودة للغاية.
+قواعد الرد الصارمة:
+1. يجب أن يكون ردك بالكامل باللغة العربية (اللهجة المصرية العامية البسيطة والسهلة الفهم).
+2. ممنوع تماماً استخدام اللغة العربية الفصحى أو الكلمات الإنجليزية في أي جزء من الإجابة.
+3. رحّب بالمستخدم باسم نباته وحالته الصحية (سواء كان سليماً أو مصاباً بالمرض المحدد) باللغة العربية.
+4. اشرح المرض ومعلومات عامة عنه بأسلوب بسيط، دافئ ومفهوم جداً للمستخدم العادي (بدون تعقيدات علمية).
+5. تنبيه هام جداً: لا تذكر خطوات أو تفاصيل العلاج الإجرائية (مثل استخدام مبيدات أو قطع أوراق... إلخ) في هذا الرد أبداً!
+${isHealthy ? "6. تنبيه: بما أن النبات سليم، لا تطرح أي أسئلة حول العلاج." : "6. في نهاية الرد تماماً، يجب أن تطرح هذا السؤال التفاعلي حرفياً كما هو بين القوسين: (هل تحب أن تعرف إزاي تعالجه؟)."}
+7. ممنوع استخدام كلمات مثل "يا حبيبي"، وممنوع خلط اللغات.`
         : `You are "Flora" — a friendly and professional agricultural assistant.
 Response Rules:
 1. Welcome the user warmly and politely.
 2. Tell them the common name of their plant and its health status (whether it is healthy or has the diagnosed disease).
 3. Explain the disease and general information about it in a very simple, easy-to-understand, friendly language.
 4. CRITICAL: Do NOT list any treatment steps, actions, or chemical cures in this response.
-5. At the very end of your response, ask this interactive question: (Would you like to know how to treat it?).
+${isHealthy ? "5. Note: Since the plant is healthy, do NOT ask any questions about treatment." : "5. At the very end of your response, ask this interactive question: (Would you like to know how to treat it?)."}
 6. Keep the tone warm and helpful.`;
 
     const dataBlock = isArabic
         ? `بيانات تشخيص النبات:
-اسم النبات: ${geminiResult.final_plant}
-الحالة/المرض: ${isHealthy ? "سليم ومعافى" : geminiResult.final_disease}
+اسم النبات: ${plantAr}
+الحالة/المرض: ${isHealthy ? "سليم ومعافى" : diseaseAr}
 الأعراض الملاحظة: ${geminiResult.symptoms}
 السبب: ${geminiResult.cause}
 التوضيح العلمي: ${geminiResult.explanation}
@@ -230,25 +254,126 @@ Rewrite this diagnosis for the user according to the response rules.`;
                 { role: "user",   content: dataBlock  }
             ],
             temperature: 0.6,
-            max_tokens:  550,
+            max_tokens:  1200, // FIX (Image 2): 550 caused Arabic responses to truncate mid-sentence
             stream:      false
         },
         {
             headers: { "Content-Type": "application/json" },
-            timeout: GEMMA_TIMEOUT   // ✅ 90s من .env
+            timeout: GEMMA_TIMEOUT
         }
     );
 
-    const reply = response.data?.choices?.[0]?.message?.content?.trim();
+    let reply = response.data?.choices?.[0]?.message?.content?.trim();
     if (!reply) throw new Error("Gemma returned empty response");
+
+    if (isArabic && isEnglishText(reply)) {
+        console.warn("[refineWithGemma] ⚠️ Model returned English response instead of Arabic. Triggering Arabic fallback...");
+        throw new Error("Model response language mismatch (English instead of Arabic)");
+    }
+
+    if (isHealthy) {
+        reply = stripTreatmentSections(reply);
+    } else {
+        reply = ensureTreatmentQuestion(reply, lang);
+    }
+
     return reply;
+}
+
+const PLANT_TRANSLATIONS = {
+    "apple": "تفاح",
+    "blueberry": "توت أزرق",
+    "cherry": "كرز",
+    "cherry_(including_sour)": "كرز",
+    "corn": "ذرة",
+    "corn_(maize)": "ذرة",
+    "grape": "عنب",
+    "orange": "برتقال",
+    "peach": "خوخ",
+    "pepper": "فلفل رومي",
+    "pepper,_bell": "فلفل رومي",
+    "potato": "بطاطس",
+    "raspberry": "توت العليق",
+    "soybean": "فول الصويا",
+    "squash": "كوسة",
+    "strawberry": "فراولة",
+    "tomato": "طماطم"
+};
+
+const DISEASE_TRANSLATIONS = {
+    "apple_scab": "جرب التفاح",
+    "black_rot": "العفن الأسود",
+    "cedar_apple_rust": "صدأ تفاح الأرز",
+    "powdery_mildew": "البياض الدقيقي",
+    "cercospora_leaf_spot gray_leaf_spot": "بقعة أوراق سيركوسبورا (البقعة الرمادية)",
+    "common_rust_": "الصدأ الشائع",
+    "common_rust": "الصدأ الشائع",
+    "northern_leaf_blight": "لفحة الأوراق الشمالية",
+    "esca_(black_measles)": "مرض الإسكا (الحصبة السوداء)",
+    "leaf_blight_(isariopsis_leaf_spot)": "لفحة الأوراق",
+    "haunglongbing_(citrus_greening)": "اخضرار الحمضيات (التبرقش الأصفر)",
+    "bacterial_spot": "التبقع البكتيري",
+    "early_blight": "اللفحة المبكرة",
+    "late_blight": "اللفحة المتأخرة",
+    "leaf_mold": "عفن الأوراق",
+    "septoria_leaf_spot": "تبقع أوراق السبتوريا",
+    "spider_mites two-spotted_spider_mite": "العنكبوت الأحمر ذو البقعتين",
+    "target_spot": "التبقع المستهدف",
+    "tomato_yellow_leaf_curl_virus": "فيروس تجعد أوراق الطماطم الأصفر",
+    "tomato_mosaic_virus": "فيروس مبرقش الطماطم (الموزايك)",
+    "leaf_scorch": "حرق الأوراق",
+    "healthy": "سليم ومعافى"
+};
+
+export function getArabicPlant(engPlant) {
+    if (!engPlant) return "نبات غير معروف";
+    // FIX (Bug 3): Normalize BOTH underscores and spaces so the lookup succeeds
+    // regardless of whether the input is "Tomato" (Gemini) or "tomato" (CNN)
+    // or "cherry_(including_sour)" (CNN label with underscores).
+    const key = engPlant.toLowerCase().trim()
+                         .replace(/[\s ]+/g, "_")   // spaces → underscores
+                         .replace(/_+/g, "_")             // collapse repeated underscores
+                         .replace(/[,\.]/g, "");         // strip stray commas/dots
+    return PLANT_TRANSLATIONS[key] || engPlant;
+}
+
+export function getArabicDisease(engDisease) {
+    if (!engDisease) return "حالة غير معروفة";
+    // FIX (Bug 3): The CNN model returns names like "Tomato mosaic virus" (spaces)
+    // while the dictionary keys use underscores ("tomato_mosaic_virus").
+    // The old code only normalized whitespace runs but kept them as spaces,
+    // so the lookup always missed → the raw English name leaked into Arabic replies.
+    //
+    // New strategy: normalize everything to lowercase-with-underscores, matching
+    // the DISEASE_TRANSLATIONS key format exactly.
+    const normalized = engDisease.toLowerCase().trim()
+                                  .replace(/[\s \-]+/g, "_")  // spaces/hyphens → underscore
+                                  .replace(/_+/g, "_")              // collapse doubles
+                                  .replace(/[,\.]/g, "");          // strip stray commas/dots
+
+    if (normalized.includes("healthy")) return "سليم ومعافى";
+
+    // Direct lookup first
+    if (DISEASE_TRANSLATIONS[normalized]) return DISEASE_TRANSLATIONS[normalized];
+
+    // Fallback: try with spaces instead of underscores (for cases like "black rot")
+    const withSpaces = normalized.replace(/_/g, " ");
+    if (DISEASE_TRANSLATIONS[withSpaces]) return DISEASE_TRANSLATIONS[withSpaces];
+
+    // Partial match fallback — catches sub-strings like "spider_mites" from a longer label
+    for (const [dictKey, arabicVal] of Object.entries(DISEASE_TRANSLATIONS)) {
+        if (normalized.includes(dictKey) || dictKey.includes(normalized)) {
+            return arabicVal;
+        }
+    }
+
+    return engDisease; // last resort: return the original (will be English, but avoids silence)
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
 // ORCHESTRATOR
 // ══════════════════════════════════════════════════════════════════════════════
 export async function processPlantAnalysis({ imageBuffer, mimeType, userQuestion = "", lang = "ar", res = null }) {
-
     const _debug = { layers_failed: [], gemma_used: false };
 
     // Layer 1 — CNN
@@ -275,18 +400,10 @@ export async function processPlantAnalysis({ imageBuffer, mimeType, userQuestion
         explanation: "N/A (Bypassed Gemini)"
     };
 
-    // Emit diagnosis_meta → frontend يحفظه لـ follow-up questions
-    _sseEvent(res, {
-        type: "diagnosis_meta",
-        plant: geminiResult.final_plant, disease: geminiResult.final_disease,
-        confidence: geminiResult.confidence, symptoms: geminiResult.symptoms,
-        cause: geminiResult.cause, treatment: geminiResult.treatment,
-        isHealthy: geminiResult.final_disease.toLowerCase().includes("healthy")
-    });
-
     // Layer 3 — Gemma
     let finalExplanation;
     let modelUsed = "pipeline";
+    const isHealthy = geminiResult.final_disease.toLowerCase().includes("healthy");
 
     try {
         finalExplanation  = await refineWithGemma(geminiResult, userQuestion, lang);
@@ -298,29 +415,21 @@ export async function processPlantAnalysis({ imageBuffer, mimeType, userQuestion
         _debug.layers_failed.push("gemma");
         modelUsed = "fallback";
 
-        const healthy = geminiResult.final_disease.toLowerCase().includes("healthy");
-        if (lang === "ar") {
-            if (healthy) {
-                finalExplanation = `✅ نباتك بخير! ${geminiResult.final_plant} يبدو في حالة ممتازة.`;
-            } else {
-                finalExplanation = `⚠️ تم اكتشاف **${geminiResult.final_disease}** في نبات **${geminiResult.final_plant}** (نسبة الثقة: ${Number(geminiResult.confidence).toFixed(0)}%).\n\n(هل تحب أن تعرف إزاي تعالجه؟)`;
-            }
+        const plantAr = getArabicPlant(geminiResult.final_plant);
+
+        if (isHealthy) {
+            finalExplanation = `أهلاً بيك! أنا فلورا. 🌿\nبناءً على تحليلي، النبتة اللي بعتها هي **${plantAr}** وهي **سليمة ومعافاة** وبصحة جيدة جداً.\n\nشكلها ممتاز وبتنمو بشكل طبيعي. حافظ عليها واسقيها بانتظام لتفضل دايماً خضراء وجميلة!`;
         } else {
-            if (healthy) {
-                finalExplanation = `✅ Your ${geminiResult.final_plant} looks healthy!`;
-            } else {
-                finalExplanation = `⚠️ Detected **${geminiResult.final_disease}** in your **${geminiResult.final_plant}** (${Number(geminiResult.confidence).toFixed(0)}% confidence).\n\n(Would you like to know how to treat it?)`;
-            }
+            const diseaseAr = getArabicDisease(geminiResult.final_disease);
+            finalExplanation = `أهلاً بيك! أنا فلورا. 🌿\nبناءً على تحليلي، النبتة اللي بعتها هي **${plantAr}** ومصابة بـ **${diseaseAr}**.\n\nالمرض ده ممكن يأثر على صحة النبات وينتشر لباقي الأوراق بسرعة لو متدخلناش، بس متقلقش كل مشكلة وليها حل.\n\n(هل تحب أن تعرف إزاي تعالجه؟)`;
         }
     }
 
-    _sseEvent(res, { type: "model_info", model: modelUsed });
-
     return {
         plant: geminiResult.final_plant, disease: geminiResult.final_disease,
-        isHealthy: geminiResult.final_disease.toLowerCase().includes("healthy"),
+        isHealthy: isHealthy,
         confidence: geminiResult.confidence, symptoms: geminiResult.symptoms,
         cause: geminiResult.cause, treatment: geminiResult.treatment,
-        explanation: finalExplanation, _debug
+        explanation: finalExplanation, _debug, model: modelUsed
     };
 }

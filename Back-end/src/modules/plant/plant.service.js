@@ -63,6 +63,19 @@ export const diagnosePlant = async (req, res, next) => {
             lang
         });
 
+        if (result.image_unclear) {
+            console.log("[plant] ⚠️ Image unclear — returning friendly guidance");
+            return res.status(200).json({
+                message: "Success",
+                data: {
+                    diagnosis: {
+                        image_unclear: true,
+                        explanation:   result.explanation
+                    }
+                }
+            });
+        }
+
         console.log(`[plant] Done — ${result.plant} / ${result.disease} @ ${result.confidence.toFixed(1)}%`);
 
         // ── 4. Save to MongoDB with CORRECT schema fields ──────

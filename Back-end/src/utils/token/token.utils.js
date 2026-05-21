@@ -34,8 +34,6 @@ export const getSignature = async ({signatureLevel = signatureEnum.USER}) => {
 
     }
 
-    console.log (signatures);
-
     return signatures;
 };
 
