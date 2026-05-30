@@ -1,0 +1,21 @@
+# Environment files
+.env
+.env.dev
+*.env
+
+# Dependency directories
+node_modules/
+jspm_packages/
+web_assembly/
+
+# Python cache and virtualenvs
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+
+# OS files
+.DS_Store
+Thumbs.db
