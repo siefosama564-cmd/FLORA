@@ -33,7 +33,7 @@ FLORA MASTER/
 Open `Back-end/src/config/.env.dev` and verify:
 
 ```
-GEMINI_API_KEY=AIzaSyCUws82ly4a2IZVDTRGILWmJcOxTIBMYYA   ← already set
+GEMINI_API_KEY=*******************************   ← already set
 GEMMA_BASE_URL=http://localhost:1234/v1                    ← LM Studio default
 GEMMA_MODEL=gemma-3-4b-it                                  ← model name in LM Studio
 ```
@@ -111,7 +111,7 @@ User uploads image
 ```
 
 ### Fallback Chain (never crashes):
-- Gemma timeout (30s) → **Gemini takes over**
+- Gemma timeout (90s) → **Gemini takes over**
 - Gemini fails → **CNN result used directly**
 - All fail → **safe error message shown**
 
