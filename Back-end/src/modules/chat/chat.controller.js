@@ -111,20 +111,34 @@ function buildSystemPrompt(lang, diagnosisCtx) {
     const diseaseName = lang === "ar" ? getArabicDisease(rawDisease) : rawDisease;
     const isHealthy   = rawDisease.toLowerCase().includes("healthy");
 
-    const diagnosisBlock = diagnosisCtx ? (
-        lang === "ar"
-            ? `\n\n[نتيجة تحليل الصورة]\nالنبات: ${plantName}\nالمرض/الحالة: ${isHealthy ? "سليم ومعافى" : diseaseName}`
-            : `\n\n[Previous Diagnosis]\nPlant: ${plantName}\nDisease/Status: ${isHealthy ? "Healthy" : diseaseName}`
-    ) : "";
-
     if (lang === "ar") {
+        let contextInstruction = "";
+        if (diagnosisCtx) {
+            contextInstruction = `\n\nتنبيه هام جداً: قام المستخدم برفع صورة نبات سابقاً وتم تشخيصه كالتالي:
+- اسم النبات: ${plantName}
+- حالة النبات/المرض: ${isHealthy ? "سليم ومعافى" : diseaseName}
+يجب أن تركز إجابتك بالكامل على هذا النبات وهذا المرض المحدد وتجيب على سؤال المستخدم بناءً عليه وتوفر له النصائح والحلول المناسبة له. لا تسأله عن اسم النبات أو تطلب منه رفع الصورة مرة أخرى لأن التشخيص تم بالفعل!`;
+        }
+
         return `أنت "فلورا" — خبيرة زراعية مصرية ذكية وودودة للغاية.
 قواعد الرد الصارمة:
 1. ردك يجب أن يكون بالكامل باللهجة المصرية العامية البسيطة — ممنوع الفصحى أو الإنجليزي.
-2. رد مباشرة على سؤال المستخدم بشكل دافئ ومفيد.
-3. لا تكرر بيانات التشخيص — المستخدم يعرفها بالفعل.${diagnosisBlock}`;
+2. رد مباشرة على سؤال المستخدم بشكل دافئ ومفيد وبناءً على السياق الحالي.
+3. لا تقم بكتابة بيانات التشخيص كعنوان جاف في بداية الرد (مثل: "الاسم: تفاح، المرض: جرب التفاح") لأن المستخدم يعرفها بالفعل، ولكن استخدم هذه المعلومات لتوجيه ردك بالكامل لحل مشكلة المستخدم.${contextInstruction}
+4. تنبيه هام جداً: ابدأ ردك مباشرة بدون كتابة أي تفكير أو مسودات تفكير (مثل: Thinking Process أو غيرها).`;
     }
-    return `You are "Flora" — a friendly, professional agricultural assistant. Answer the user's question clearly and helpfully.${diagnosisBlock}`;
+
+    let contextInstruction = "";
+    if (diagnosisCtx) {
+        contextInstruction = `\n\nCRITICAL CONTEXT: The user previously uploaded an image and it was diagnosed as follows:
+- Plant Name: ${plantName}
+- Plant Status/Disease: ${isHealthy ? "Healthy" : diseaseName}
+Focus your response entirely on this specific plant and disease. Answer the user's question based on this context. Do not ask for the image or diagnosis again.`;
+    }
+
+    return `You are "Flora" — a friendly, professional agricultural assistant. Answer the user's question clearly and helpfully.
+CRITICAL: Start your response directly. DO NOT output any reasoning, thinking process, or thoughts.
+Do not output the diagnosis as a dry summary header, but use the context to directly answer the user's questions.${contextInstruction}`;
 }
 
 async function fetchConversationHistory(conversationId, userId) {
@@ -263,6 +277,9 @@ router.post("/ask", authentication(), chatUpload.single("image"), async (req, re
     const systemPrompt = buildSystemPrompt(lang, plantContext);
     const messages     = [{ role: "system", content: systemPrompt }, ...dbHistory, { role: "user", content: safeMessage }];
 
+    console.log("[chat.controller] 💬 System Prompt generated:\n", systemPrompt);
+    console.log("[chat.controller] 💬 Sending messages to Gemma:\n", JSON.stringify(messages, null, 2));
+
     // Step 1: Fetch the FULL reply from Gemma first
     let fullReply = "";
     let modelUsed = "gemma";
@@ -271,7 +288,7 @@ router.post("/ask", authentication(), chatUpload.single("image"), async (req, re
         console.log("[chat.controller] Fetching full reply from Gemma...");
         const gemmaRes = await axios.post(
             `${GEMMA_BASE_URL}/chat/completions`,
-            { model: GEMMA_MODEL, messages, stream: false, temperature: 0.7, max_tokens: 1200 }, // FIX (Image 2): 500 was cutting Arabic responses mid-sentence
+            { model: GEMMA_MODEL, messages, stream: false, temperature: 0.7, max_tokens: 1200 },
             { headers: { "Content-Type": "application/json" }, timeout: GEMMA_TIMEOUT }
         );
         fullReply = gemmaRes.data?.choices?.[0]?.message?.content?.trim();
