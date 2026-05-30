@@ -425,12 +425,46 @@ body {
   flex-direction: row-reverse;
 }
 
+/* User message layout (English/Default):
+   - Avatar on the right (order: 1)
+   - Message Bubble in the middle (order: 2)
+   - Options (3 dots) on the left (order: 3)
+   (under flex-direction: row-reverse) */
+.user-group .ua-placeholder {
+  order: 1;
+}
+.user-group .msg-bubbles {
+  order: 2;
+}
+.user-group .msg-options-btn {
+  order: 3;
+}
+
+/* Arabic RTL layout adjustments */
 [data-lang="ar"] .bot-group {
-  flex-direction: row-reverse;
+  flex-direction: row; /* Natural RTL flow */
+}
+[data-lang="ar"] .bot-group .msg-avatar {
+  order: 1; /* Rightmost */
+}
+[data-lang="ar"] .bot-group .msg-bubbles {
+  order: 2; /* Middle */
+}
+[data-lang="ar"] .bot-group .msg-options-btn {
+  order: 3; /* Leftmost */
 }
 
 [data-lang="ar"] .user-group {
-  flex-direction: row;
+  flex-direction: row; /* Natural RTL flow */
+}
+[data-lang="ar"] .user-group .ua-placeholder {
+  order: 3; /* Leftmost */
+}
+[data-lang="ar"] .user-group .msg-bubbles {
+  order: 2; /* Middle */
+}
+[data-lang="ar"] .user-group .msg-options-btn {
+  order: 1; /* Rightmost */
 }
 
 /* ════ USER AVATAR (INITIALS) ════ */
