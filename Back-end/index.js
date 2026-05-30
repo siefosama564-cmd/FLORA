@@ -11,11 +11,8 @@ const app = express()
  await bootstrap(app,express)
 
 
-const PORT = process.env.PORT
+const PORT = process.env.PORT || 3000
 
 app.listen(PORT,()=>{
     console.log(`server runing at port ${PORT}`);
-   
-
-    
 })
