@@ -557,6 +557,22 @@ function loadConversationIntoView(convId) {
     if (!convId) { showWelcomeMessages(); return; }
     const conv = loadAllConversations().find(c => c.id === convId);
     if (!conv || conv.messages.length === 0) { showWelcomeMessages(); return; }
+
+    // Restore activeDiagnosisCtx from last bot diagnosis message in history
+    activeDiagnosisCtx = null;
+    const botMsgs = (conv.messages || []).filter(m => m.role === "bot" && m.content && m.content.startsWith("🌿 **"));
+    if (botMsgs.length > 0) {
+        const lastDiag = botMsgs[botMsgs.length - 1];
+        const match = lastDiag.content.match(/^🌿 \*\*([^*]+)\*\* — ([^\n\r]+)/);
+        if (match) {
+            activeDiagnosisCtx = {
+                plant: match[1].trim(),
+                disease: match[2].trim()
+            };
+            console.log("[chat.js] 🔄 Restored activeDiagnosisCtx from history:", activeDiagnosisCtx);
+        }
+    }
+
     messagesEl.innerHTML = "";
     conv.messages.forEach(m => {
         if (m.imageDataUrl) {
@@ -1022,7 +1038,7 @@ async function sendMessage() {
                 tick();
             });
 
-            addModelLabel(botEl, "gemini");
+            addModelLabel(botEl, "fallback");
             addMessageToHistory("bot", reply);
             renderSidebar();
         }
@@ -1137,7 +1153,7 @@ function addModelLabel(groupEl, model) {
     if (!bubblesEl) return;
     const div = document.createElement("div");
     div.className = "model-label";
-    const labelText = model === "gemini"
+    const labelText = (model === "gemini" || model === "fallback")
         ? t("poweredByGemini")
         : model === "pipeline"
             ? t("poweredByPipeline")
