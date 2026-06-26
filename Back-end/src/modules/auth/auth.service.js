@@ -43,6 +43,7 @@ export const signUp = async (req, res, next) => {
         password: hashPassword,
         confirmEmailOTPExpires: otpExpires,
         confirmEmailOTP: await hash({ plainText: otp }),
+        confirmEmail: Date.now(), // Auto-verify on registration to bypass OTP verification
       },
     ],
   });
