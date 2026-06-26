@@ -329,6 +329,10 @@ router.post("/ask", authentication(), chatUpload.single("image"), async (req, re
 
     } catch (err) {
         console.warn("[chat.controller] ⚠️ Gemma failed:", err.message, "— using fallback");
+        if (err.response) {
+            console.warn("[chat.controller] Gemma error status:", err.response.status);
+            console.warn("[chat.controller] Gemma error data:", JSON.stringify(err.response.data));
+        }
         modelUsed = "fallback";
 
         if (lang === "ar") {
