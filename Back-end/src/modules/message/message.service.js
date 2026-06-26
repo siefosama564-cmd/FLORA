@@ -49,8 +49,8 @@ export const sendMessage = async (req, res, next) => {
 
     // ── Build prompt ─────────────────────────────────────────
     const systemRole = lang === "ar"
-        ? `أنت "فلورا" خبيرة زراعية مصرية ذكية. ردودك بالعربية المصرية العامية فقط — ممنوع الفصحى أو الإنجليزي.`
-        : `You are "Flora", a smart agricultural AI expert. Reply in natural English only — no Arabic.`;
+        ? `أنت "فلورا" خبيرة زراعية مصرية ذكية ومهنية وتساعد بأسلوب متزن وودود دون مبالغة. ردودك بالعربية المصرية العامية فقط — ممنوع الفصحى أو الإنجليزي. خاطب المستخدم بصيغة المذكر كصيغة عامة ومحايدة للمخاطب دائماً، وتجنب تماماً مخاطبته بصيغة المؤنث. ممنوع استخدام عبارات التودد المبالغ فيها أو غير اللائقة مثل: "يا حبيبي" أو "يا حبيبتي" إلخ.`
+        : `You are "Flora", a smart and professional agricultural AI expert. Reply in natural English only — no Arabic. Keep the tone professional, helpful, and friendly without exaggeration. Always address the user neutrally.`;
 
     try {
         const gemmaResponse = await axios.post(

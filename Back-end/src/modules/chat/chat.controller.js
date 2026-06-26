@@ -70,11 +70,17 @@ function _streamBufferedText(res, fullText, model = "gemma") {
 // phrases at the output level so they never reach the user.
 const FORBIDDEN_PHRASES = [
     /يا حبيبي[،,]?\s*/g,
+    /يا حبيبتي[،,]?\s*/g,
+    /حبيبتي[،,]?\s*/g,
     /يا عزيزي[،,]?\s*/g,
+    /يا عزيزتي[،,]?\s*/g,
+    /عزيزتي[،,]?\s*/g,
     /يا صديقي[،,]?\s*/g,
     /يا أخي[،,]?\s*/g,
     /يا أختي[،,]?\s*/g,
     /يا سيدي[،,]?\s*/g,       // keep "بس يا سيدي" pattern below — only strip leading greeting
+    /يا روحي[،,]?\s*/g,
+    /يا قلبي[،,]?\s*/g,
 ];
 
 function cleanArabicResponse(text) {
@@ -85,12 +91,20 @@ function cleanArabicResponse(text) {
     // that are semantically necessary are left untouched.
     cleaned = cleaned
         .replace(/^يا حبيبي[،,]?\s*/m, "")
+        .replace(/^يا حبيبتي[،,]?\s*/m, "")
+        .replace(/^حبيبتي[،,]?\s*/m, "")
         .replace(/^يا عزيزي[،,]?\s*/m, "")
+        .replace(/^يا عزيزتي[،,]?\s*/m, "")
+        .replace(/^عزيزتي[،,]?\s*/m, "")
         .replace(/^يا صديقي[،,]?\s*/m, "")
         .replace(/^يا أخي[،,]?\s*/m,   "")
         .replace(/^يا أختي[،,]?\s*/m,  "")
-        .replace(/yا حبيبي[،,]?\s*/g, "")   // mid-sentence catch-all
-        .replace(/يا حبيبي[،,]?\s*/g, "");
+        .replace(/^يا روحي[،,]?\s*/m,  "")
+        .replace(/^يا قلبي[、,]?\s*/m,  "")
+        .replace(/ yا حبيبي [،,]?\s*/g, "")   // mid-sentence catch-all
+        .replace(/ يا حبيبي [،,]?\s*/g, "")
+        .replace(/ يا حبيبتي [،,]?\s*/g, "")
+        .replace(/ حبيبتي [،,]?\s*/g, "");
     return cleaned.trimStart();
 }
 
@@ -120,12 +134,14 @@ function buildSystemPrompt(lang, diagnosisCtx) {
 يجب أن تركز إجابتك بالكامل على هذا النبات وهذا المرض المحدد وتجيب على سؤال المستخدم بناءً عليه وتوفر له النصائح والحلول المناسبة له. لا تسأله عن اسم النبات أو تطلب منه رفع الصورة مرة أخرى لأن التشخيص تم بالفعل!`;
         }
 
-        return `أنت "فلورا" — خبيرة زراعية مصرية ذكية وودودة للغاية.
+        return `أنت "فلورا" — خبيرة زراعية مصرية ذكية ومهنية وتساعد بأسلوب متزن وودود دون مبالغة.
 قواعد الرد الصارمة:
 1. ردك يجب أن يكون بالكامل باللهجة المصرية العامية البسيطة — ممنوع الفصحى أو الإنجليزي.
-2. رد مباشرة على سؤال المستخدم بشكل دافئ ومفيد وبناءً على السياق الحالي.
-3. لا تقم بكتابة بيانات التشخيص كعنوان جاف في بداية الرد (مثل: "الاسم: تفاح، المرض: جرب التفاح") لأن المستخدم يعرفها بالفعل، ولكن استخدم هذه المعلومات لتوجيه ردك بالكامل لحل مشكلة المستخدم.${contextInstruction}
-4. تنبيه هام جداً: ابدأ ردك مباشرة بدون كتابة أي تفكير أو مسودات تفكير (مثل: Thinking Process أو غيرها).`;
+2. رد مباشرة على سؤال المستخدم بشكل مهني ولطيف ومفيد وبناءً على السياق الحالي دون مبالغة في الود أو العاطفة.
+3. خاطب المستخدم بصيغة المذكر (باعتبارها الصيغة العامة والمحايدة للمخاطب في اللغة العربية)، وتجنب تماماً مخاطبته بصيغة المؤنث (مثل: أهلاً بكِ، تفضلي، إلخ).
+4. لا تقم بكتابة بيانات التشخيص كعنوان جاف في بداية الرد (مثل: "الاسم: تفاح، المرض: جرب التفاح") لأن المستخدم يعرفها بالفعل، ولكن استخدم هذه المعلومات لتوجيه ردك بالكامل لحل مشكلة المستخدم.${contextInstruction}
+5. ممنوع استخدام عبارات التودد المبالغ فيها أو غير اللائقة مثل: "يا حبيبي"، "يا حبيبتي"، "يا عزيزتي"، "يا روحي"، إلخ.
+6. تنبيه هام جداً: ابدأ ردك مباشرة بدون كتابة أي تفكير أو مسودات تفكير (مثل: Thinking Process أو غيرها).`;
     }
 
     let contextInstruction = "";
@@ -237,7 +253,14 @@ router.post("/ask", authentication(), chatUpload.single("image"), async (req, re
             });
 
             const isHealthy = result.isHealthy;
-            const fullRes   = `🌿 **${result.plant}** — ${result.disease}\n\n${result.explanation}`;
+            const confidenceLabel = lang === "ar" ? "نسبة الثقة" : "Confidence";
+            let confidenceText = `📊 **${confidenceLabel}:** ${result.confidence}%`;
+            if (result.confidence < 65) {
+                confidenceText += lang === "ar"
+                    ? ` ⚠️ (قد تكون دقة التشخيص منخفضة، يرجى التأكد من وضوح الصورة وقربها من الأوراق المصابة)`
+                    : ` ⚠️ (The diagnosis confidence is low. Please ensure the image is clear and focused on the affected leaves)`;
+            }
+            const fullRes   = `🌿 **${result.plant}** — ${result.disease}\n${confidenceText}\n\n${result.explanation}`;
 
             // Send diagnosis metadata BEFORE streaming text
             _sseJson(res, {

@@ -257,28 +257,22 @@ function applyLang(lang) {
     const msgInput = document.getElementById("msgInput");
     if (msgInput) msgInput.placeholder = t("askPlaceholder");
 
-    // Re-render any dynamic areas that don't use data-en
-    const messagesEl = document.getElementById("messages");
-    if (messagesEl) {
-        // If welcome screen is showing — re-render it in new language
-        if (messagesEl.querySelector(".welcome-screen")) {
-            showWelcomeMessages();
-            return; // showWelcomeMessages handles suggestions visibility
-        }
-        // Otherwise just update [data-welcome] elements
-        messagesEl.querySelectorAll("[data-welcome]").forEach(el => {
-            const key = el.dataset.welcome;
-            if (key) el.textContent = t(key);
-        });
-    }
-
     // Re-render sidebar (translates "No conversations yet", times, etc.)
     renderSidebar();
 
-    // Re-render welcome if no active convo (to update language)
-    const activeId = getActiveConvId();
-    if (!activeId || (loadAllConversations().find(c => c.id === activeId)?.messages?.length === 0)) {
-        showWelcomeMessages();
+    // Re-render main chat section based on state
+    const messagesEl = document.getElementById("messages");
+    if (messagesEl) {
+        const activeId = getActiveConvId();
+        const activeConv = activeId ? loadAllConversations().find(c => c.id === activeId) : null;
+        
+        if (activeConv && activeConv.messages && activeConv.messages.length > 0) {
+            // Active conversation has messages -> re-render the conversation in the new language
+            loadConversationIntoView(activeId);
+        } else {
+            // No active conversation or active conversation has 0 messages -> show welcome screen in new language
+            showWelcomeMessages();
+        }
     }
 }
 
@@ -324,13 +318,14 @@ function createNewConversation() {
     return conv;
 }
 
-function addMessageToHistory(role, content, imageDataUrl = null) {
+function addMessageToHistory(role, content, imageDataUrl = null, model = null) {
     const convs = loadAllConversations();
     const id = getActiveConvId();
     const conv = convs.find(c => c.id === id);
     if (!conv) return;
     const entry = { role, content, ts: Date.now() };
     if (imageDataUrl) entry.imageDataUrl = imageDataUrl;
+    if (model) entry.model = model;
     conv.messages.push(entry);
     conv.updatedAt = Date.now();
     if (role === "user" && (conv.title === t("newChat") || conv.title === "New Chat" || conv.title === "محادثة جديدة")) {
@@ -579,7 +574,11 @@ function loadConversationIntoView(convId) {
             // Re-render user message that had an image attached
             appendUserImageMessage(m.imageDataUrl, m.content.replace(/^📷\s*/, "").trim(), false);
         } else {
-            appendMessage(m.role === "user" ? "user" : "bot", m.content, false);
+            const botEl = appendMessage(m.role === "user" ? "user" : "bot", m.content, false);
+            if (m.role === "bot") {
+                const modelUsed = m.model || "gemma";
+                addModelLabel(botEl, modelUsed);
+            }
         }
     });
     messagesEl.scrollTo({ top: messagesEl.scrollHeight });
@@ -1001,7 +1000,7 @@ async function sendMessage() {
             if (fullText && botEl) {
                 addModelLabel(botEl, currentModel);
                 _attachOptionsAfterStream(botEl, fullText);
-                addMessageToHistory("bot", fullText);
+                addMessageToHistory("bot", fullText, null, currentModel);
                 renderSidebar();
             }
 
@@ -1039,7 +1038,7 @@ async function sendMessage() {
             });
 
             addModelLabel(botEl, "fallback");
-            addMessageToHistory("bot", reply);
+            addMessageToHistory("bot", reply, null, "fallback");
             renderSidebar();
         }
 
