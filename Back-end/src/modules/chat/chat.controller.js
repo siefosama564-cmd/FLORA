@@ -165,7 +165,16 @@ async function fetchConversationHistory(conversationId, userId) {
     try {
         const messages = await messageModel.find({ conversationId, senderId: userId })
             .sort({ createdAt: 1 }).limit(15).lean();
-        return messages.map(m => ({ role: m.senderType === "USER" ? "user" : "assistant", content: String(m.content || "") }));
+        return messages.map(m => {
+            let content = String(m.content || "").trim();
+            if (!content) {
+                content = m.senderType === "USER" ? "أرسل صورة للنبات" : "تحليل صورة النبات";
+            }
+            return {
+                role: m.senderType === "USER" ? "user" : "assistant",
+                content
+            };
+        });
     } catch { return []; }
 }
 
