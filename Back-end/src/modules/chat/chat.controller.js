@@ -358,7 +358,11 @@ router.post("/ask", authentication(), chatUpload.single("image"), async (req, re
                     fullReply += `4. **استشارة متخصص:** راجع مرشد زراعي لاختيار العلاج المناسب.`;
                 }
             } else {
-                fullReply = "أهلاً بك! أنا فلورا. في مشكلة بالاتصال بالخدمة الذكية دلوقتي — تأكد إن LM Studio شغال وحاول تاني.";
+                if (!process.env.GEMMA_API_KEY) {
+                    fullReply = "أهلاً بك! أنا فلورا. هناك مشكلة في الاتصال بالخدمة الذكية: يبدو أن متغيرات البيئة GEMMA_API_KEY و GEMMA_BASE_URL غير مضافة في إعدادات Vercel. يرجى إضافتها في الـ Environment Variables.";
+                } else {
+                    fullReply = `أهلاً بك! أنا فلورا. في مشكلة بالاتصال بالخدمة الذكية دلوقتي (Error: ${err.message}) — يرجى التأكد من تشغيل الخدمة والمحاولة مجدداً.`;
+                }
             }
         } else {
             fullReply = plantName
