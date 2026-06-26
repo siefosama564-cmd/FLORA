@@ -351,6 +351,10 @@ export async function processPlantAnalysis({ imageBuffer, mimeType, userQuestion
             };
         } catch (fallbackErr) {
             console.error("[AI Pipeline] ❌ Gemini Multimodal Fallback failed too:", fallbackErr.message);
+            if (fallbackErr.response) {
+                console.error("[AI Pipeline] Fallback error status:", fallbackErr.response.status);
+                console.error("[AI Pipeline] Fallback error data:", JSON.stringify(fallbackErr.response.data));
+            }
             _debug.layers_failed.push("gemini_multimodal");
             cnnResult = { label: "Unknown_Unknown", plant: "Unknown", disease: "Unknown", confidence: 0 };
         }
@@ -380,6 +384,10 @@ export async function processPlantAnalysis({ imageBuffer, mimeType, userQuestion
         console.log("[AI Pipeline] ✅ Layer 2 (Gemma): done");
     } catch (err) {
         console.warn("[AI Pipeline] ⚠️ Layer 2 (Gemma) failed:", err.message);
+        if (err.response) {
+            console.warn("[AI Pipeline] Layer 2 error status:", err.response.status);
+            console.warn("[AI Pipeline] Layer 2 error data:", JSON.stringify(err.response.data));
+        }
         _debug.layers_failed.push("gemma");
         modelUsed = "fallback";
 
