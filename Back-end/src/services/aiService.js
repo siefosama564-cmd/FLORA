@@ -141,7 +141,10 @@ Rewrite this diagnosis for the user according to the response rules.`;
             stream: false
         },
         {
-            headers: { "Content-Type": "application/json" },
+            headers: { 
+                "Content-Type": "application/json",
+                ...(process.env.GEMMA_API_KEY ? { "Authorization": `Bearer ${process.env.GEMMA_API_KEY}` } : {})
+            },
             timeout: GEMMA_TIMEOUT
         }
     );

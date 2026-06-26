@@ -312,7 +312,13 @@ router.post("/ask", authentication(), chatUpload.single("image"), async (req, re
         const gemmaRes = await axios.post(
             `${GEMMA_BASE_URL}/chat/completions`,
             { model: GEMMA_MODEL, messages, stream: false, temperature: 0.7, max_tokens: 1200 },
-            { headers: { "Content-Type": "application/json" }, timeout: GEMMA_TIMEOUT }
+            { 
+                headers: { 
+                    "Content-Type": "application/json",
+                    ...(process.env.GEMMA_API_KEY ? { "Authorization": `Bearer ${process.env.GEMMA_API_KEY}` } : {})
+                }, 
+                timeout: GEMMA_TIMEOUT 
+            }
         );
         fullReply = gemmaRes.data?.choices?.[0]?.message?.content?.trim();
         if (!fullReply) throw new Error("Gemma returned empty response");

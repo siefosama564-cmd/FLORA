@@ -65,7 +65,13 @@ export const sendMessage = async (req, res, next) => {
                 max_tokens:  300,
                 stream:      false
             },
-            { timeout: 45000 }
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                    ...(process.env.GEMMA_API_KEY ? { "Authorization": `Bearer ${process.env.GEMMA_API_KEY}` } : {})
+                },
+                timeout: 45000
+            }
         );
 
         const botReplyText = gemmaResponse.data?.choices?.[0]?.message?.content?.trim()
