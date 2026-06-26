@@ -5,7 +5,10 @@
 import axios from "axios";
 
 const GEMMA_BASE_URL = process.env.GEMMA_BASE_URL || "http://localhost:1234/v1";
-const GEMMA_MODEL = process.env.GEMMA_MODEL || "gemma-3-4b-it";
+let GEMMA_MODEL = process.env.GEMMA_MODEL || "gemma-3-4b-it";
+if (GEMMA_MODEL === "gemini-1.5-flash") {
+    GEMMA_MODEL = "gemini-2.5-flash";
+}
 const GEMMA_TIMEOUT = parseInt(process.env.AI_TIMEOUT) || 90_000;
 
 // ══════════════════════════════════════════════════════════════════════════════

@@ -16,6 +16,10 @@ import morgan from "morgan"
 const bootstrap = async (app, express) => {
     dotenv.config({ path: path.resolve("./src/config/.env.dev") })
 
+    if (process.env.VERCEL) {
+        app.set("trust proxy", 1);
+    }
+
     app.use(express.json());
     app.use(cors(corsOption())); 
     app.use(helmet({
