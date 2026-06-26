@@ -1,5 +1,5 @@
-/**
- * FLORA — AI Service (CNN + Gemma Pipeline)
+﻿/**
+ * FLORA â€” AI Service (CNN + Gemma Pipeline)
  */
 
 import axios from "axios";
@@ -13,9 +13,9 @@ const _k1 = "AQ.Ab8R"; const _k2 = "N6IJoJTN"; const _k3 = "RTAIdYWL_5Ke6qc"; co
 const GEMMA_API_KEY = process.env.GEMMA_API_KEY || (_k1 + _k2 + _k3 + _k4);
 const GEMMA_TIMEOUT = parseInt(process.env.AI_TIMEOUT) || 90_000;
 
-// ══════════════════════════════════════════════════════════════════════════════
-// LAYER 1 — CNN Model Client
-// ══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// LAYER 1 â€” CNN Model Client
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 export async function predictPlantDisease(imageBuffer) {
     console.log("[CNN Client] Preparing FormData...");
     const formData = new FormData();
@@ -29,7 +29,7 @@ export async function predictPlantDisease(imageBuffer) {
             timeout: 25_000
         });
 
-        console.log("[CNN Client] ✅ Response received successfully:", response.data);
+        console.log("[CNN Client] âœ… Response received successfully:", response.data);
         return {
             label: response.data.class_name,
             plant: response.data.plant,
@@ -37,7 +37,7 @@ export async function predictPlantDisease(imageBuffer) {
             confidence: response.data.confidence
         };
     } catch (err) {
-        console.error("[CNN Client] ❌ Request failed:", {
+        console.error("[CNN Client] âŒ Request failed:", {
             message: err.message,
             code: err.code,
             url: url,
@@ -47,29 +47,29 @@ export async function predictPlantDisease(imageBuffer) {
     }
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // HELPERS
-// ══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 export function stripTreatmentSections(text) {
     if (!text) return "";
     let cleaned = text
-        .replace(/\(هل تحب أن تعرف إزاي تعالجه\؟\)/g, "")
-        .replace(/هل تحب أن تعرف إزاي تعالجه\؟/g, "")
+        .replace(/\(Ù‡Ù„ ØªØ­Ø¨ Ø£Ù† ØªØ¹Ø±Ù Ø¥Ø²Ø§ÙŠ ØªØ¹Ø§Ù„Ø¬Ù‡\ØŸ\)/g, "")
+        .replace(/Ù‡Ù„ ØªØ­Ø¨ Ø£Ù† ØªØ¹Ø±Ù Ø¥Ø²Ø§ÙŠ ØªØ¹Ø§Ù„Ø¬Ù‡\ØŸ/g, "")
         .replace(/\(Would you like to know how to treat it\?\)/gi, "")
         .replace(/Would you like to know how to treat it\?/gi, "")
-        .replace(/كيفية العلاج/g, "")
-        .replace(/طرق العلاج/g, "")
+        .replace(/ÙƒÙŠÙÙŠØ© Ø§Ù„Ø¹Ù„Ø§Ø¬/g, "")
+        .replace(/Ø·Ø±Ù‚ Ø§Ù„Ø¹Ù„Ø§Ø¬/g, "")
         .trim();
     return cleaned;
 }
 
 export function ensureTreatmentQuestion(text, lang) {
     if (!text) return "";
-    const questionAr = "(هل تحب أن تعرف إزاي تعالجه؟)";
+    const questionAr = "(Ù‡Ù„ ØªØ­Ø¨ Ø£Ù† ØªØ¹Ø±Ù Ø¥Ø²Ø§ÙŠ ØªØ¹Ø§Ù„Ø¬Ù‡ØŸ)";
     const questionEn = "(Would you like to know how to treat it?)";
     const target = lang === "ar" ? questionAr : questionEn;
 
-    if (text.includes("تعالجه") || text.includes("treat it")) {
+    if (text.includes("ØªØ¹Ø§Ù„Ø¬Ù‡") || text.includes("treat it")) {
         return text;
     }
     return `${text}\n\n${target}`;
@@ -82,9 +82,9 @@ function isEnglishText(text) {
     return latinChars > arabicChars && latinChars > 15;
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// LAYER 2 — Gemma-4 via LM Studio
-// ══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// LAYER 2 â€” Gemma-4 via LM Studio
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 export async function refineWithGemma(analysisResult, userQuestion = "", lang = "ar") {
     const isArabic = lang === "ar";
     const isHealthy = analysisResult.final_disease.toLowerCase().includes("healthy");
@@ -93,18 +93,18 @@ export async function refineWithGemma(analysisResult, userQuestion = "", lang = 
     const diseaseAr = getArabicDisease(analysisResult.final_disease);
 
     const systemRole = isArabic
-        ? `أنت "فلورا" — خبيرة زراعية مصرية ذكية ومهنية وتساعد بأسلوب متزن وودود دون مبالغة.
-قواعد الرد الصارمة:
-1. يجب أن يكون ردك بالكامل باللغة العربية (اللهجة المصرية العامية البسيطة والسهلة الفهم).
-2. ممنوع تماماً استخدام اللغة العربية الفصحى أو الكلمات الإنجليزية في أي جزء من الإجابة.
-3. رحّب بالمستخدم باسم نباته وحالته الصحية (سواء كان سليماً أو مصاباً بالمرض المحدد) باللغة العربية بأسلوب لطيف دون مبالغة.
-4. اشرح المرض ومعلومات عامة عنه بأسلوب بسيط ومفهوم جداً للمستخدم العادي بمهنية ولطف (بدون تعقيدات علمية وبدون مبالغة في الود).
-5. خاطب المستخدم بصيغة المذكر (باعتبارها الصيغة العامة والمحايدة للمخاطب في اللغة العربية)، وتجنب تماماً مخاطبته بصيغة المؤنث (مثل: أهلاً بكِ، تفضلي، إلخ).
-6. تنبيه هام جداً: لا تذكر خطوات أو تفاصيل العلاج الإجرائية (مثل استخدام مبيدات أو قطع أوراق... إلخ) في هذا الرد أبداً!
-${isHealthy ? "7. تنبيه: بما أن النبات سليم، لا تطرح أي أسئلة حول العلاج." : "7. في نهاية الرد تماماً، يجب أن تطرح هذا السؤال التفاعلي حرفياً كما هو بين القوسين: (هل تحب أن تعرف إزاي تعالجه؟)."}
-8. ممنوع استخدام كلمات أو عبارات التودد المبالغ فيها أو غير اللائقة مثل: "يا حبيبي"، "يا حبيبتي"، "يا عزيزتي"، "يا روحي"، إلخ.
-9. تنبيه هام جداً: ابدأ ردك مباشرة بدون كتابة أي تفكير أو مسودات تفكير (مثل: Thinking Process أو غيرها).`
-        : `You are "Flora" — a friendly and professional agricultural assistant.
+        ? `Ø£Ù†Øª "ÙÙ„ÙˆØ±Ø§" â€” Ø®Ø¨ÙŠØ±Ø© Ø²Ø±Ø§Ø¹ÙŠØ© Ù…ØµØ±ÙŠØ© Ø°ÙƒÙŠØ© ÙˆÙ…Ù‡Ù†ÙŠØ© ÙˆØªØ³Ø§Ø¹Ø¯ Ø¨Ø£Ø³Ù„ÙˆØ¨ Ù…ØªØ²Ù† ÙˆÙˆØ¯ÙˆØ¯ Ø¯ÙˆÙ† Ù…Ø¨Ø§Ù„ØºØ©.
+Ù‚ÙˆØ§Ø¹Ø¯ Ø§Ù„Ø±Ø¯ Ø§Ù„ØµØ§Ø±Ù…Ø©:
+1. ÙŠØ¬Ø¨ Ø£Ù† ÙŠÙƒÙˆÙ† Ø±Ø¯Ùƒ Ø¨Ø§Ù„ÙƒØ§Ù…Ù„ Ø¨Ø§Ù„Ù„ØºØ© Ø§Ù„Ø¹Ø±Ø¨ÙŠØ© (Ø§Ù„Ù„Ù‡Ø¬Ø© Ø§Ù„Ù…ØµØ±ÙŠØ© Ø§Ù„Ø¹Ø§Ù…ÙŠØ© Ø§Ù„Ø¨Ø³ÙŠØ·Ø© ÙˆØ§Ù„Ø³Ù‡Ù„Ø© Ø§Ù„ÙÙ‡Ù…).
+2. Ù…Ù…Ù†ÙˆØ¹ ØªÙ…Ø§Ù…Ø§Ù‹ Ø§Ø³ØªØ®Ø¯Ø§Ù… Ø§Ù„Ù„ØºØ© Ø§Ù„Ø¹Ø±Ø¨ÙŠØ© Ø§Ù„ÙØµØ­Ù‰ Ø£Ùˆ Ø§Ù„ÙƒÙ„Ù…Ø§Øª Ø§Ù„Ø¥Ù†Ø¬Ù„ÙŠØ²ÙŠØ© ÙÙŠ Ø£ÙŠ Ø¬Ø²Ø¡ Ù…Ù† Ø§Ù„Ø¥Ø¬Ø§Ø¨Ø©.
+3. Ø±Ø­Ù‘Ø¨ Ø¨Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù… Ø¨Ø§Ø³Ù… Ù†Ø¨Ø§ØªÙ‡ ÙˆØ­Ø§Ù„ØªÙ‡ Ø§Ù„ØµØ­ÙŠØ© (Ø³ÙˆØ§Ø¡ ÙƒØ§Ù† Ø³Ù„ÙŠÙ…Ø§Ù‹ Ø£Ùˆ Ù…ØµØ§Ø¨Ø§Ù‹ Ø¨Ø§Ù„Ù…Ø±Ø¶ Ø§Ù„Ù…Ø­Ø¯Ø¯) Ø¨Ø§Ù„Ù„ØºØ© Ø§Ù„Ø¹Ø±Ø¨ÙŠØ© Ø¨Ø£Ø³Ù„ÙˆØ¨ Ù„Ø·ÙŠÙ Ø¯ÙˆÙ† Ù…Ø¨Ø§Ù„ØºØ©.
+4. Ø§Ø´Ø±Ø­ Ø§Ù„Ù…Ø±Ø¶ ÙˆÙ…Ø¹Ù„ÙˆÙ…Ø§Øª Ø¹Ø§Ù…Ø© Ø¹Ù†Ù‡ Ø¨Ø£Ø³Ù„ÙˆØ¨ Ø¨Ø³ÙŠØ· ÙˆÙ…ÙÙ‡ÙˆÙ… Ø¬Ø¯Ø§Ù‹ Ù„Ù„Ù…Ø³ØªØ®Ø¯Ù… Ø§Ù„Ø¹Ø§Ø¯ÙŠ Ø¨Ù…Ù‡Ù†ÙŠØ© ÙˆÙ„Ø·Ù (Ø¨Ø¯ÙˆÙ† ØªØ¹Ù‚ÙŠØ¯Ø§Øª Ø¹Ù„Ù…ÙŠØ© ÙˆØ¨Ø¯ÙˆÙ† Ù…Ø¨Ø§Ù„ØºØ© ÙÙŠ Ø§Ù„ÙˆØ¯).
+5. Ø®Ø§Ø·Ø¨ Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù… Ø¨ØµÙŠØºØ© Ø§Ù„Ù…Ø°ÙƒØ± (Ø¨Ø§Ø¹ØªØ¨Ø§Ø±Ù‡Ø§ Ø§Ù„ØµÙŠØºØ© Ø§Ù„Ø¹Ø§Ù…Ø© ÙˆØ§Ù„Ù…Ø­Ø§ÙŠØ¯Ø© Ù„Ù„Ù…Ø®Ø§Ø·Ø¨ ÙÙŠ Ø§Ù„Ù„ØºØ© Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©)ØŒ ÙˆØªØ¬Ù†Ø¨ ØªÙ…Ø§Ù…Ø§Ù‹ Ù…Ø®Ø§Ø·Ø¨ØªÙ‡ Ø¨ØµÙŠØºØ© Ø§Ù„Ù…Ø¤Ù†Ø« (Ù…Ø«Ù„: Ø£Ù‡Ù„Ø§Ù‹ Ø¨ÙƒÙØŒ ØªÙØ¶Ù„ÙŠØŒ Ø¥Ù„Ø®).
+6. ØªÙ†Ø¨ÙŠÙ‡ Ù‡Ø§Ù… Ø¬Ø¯Ø§Ù‹: Ù„Ø§ ØªØ°ÙƒØ± Ø®Ø·ÙˆØ§Øª Ø£Ùˆ ØªÙØ§ØµÙŠÙ„ Ø§Ù„Ø¹Ù„Ø§Ø¬ Ø§Ù„Ø¥Ø¬Ø±Ø§Ø¦ÙŠØ© (Ù…Ø«Ù„ Ø§Ø³ØªØ®Ø¯Ø§Ù… Ù…Ø¨ÙŠØ¯Ø§Øª Ø£Ùˆ Ù‚Ø·Ø¹ Ø£ÙˆØ±Ø§Ù‚... Ø¥Ù„Ø®) ÙÙŠ Ù‡Ø°Ø§ Ø§Ù„Ø±Ø¯ Ø£Ø¨Ø¯Ø§Ù‹!
+${isHealthy ? "7. ØªÙ†Ø¨ÙŠÙ‡: Ø¨Ù…Ø§ Ø£Ù† Ø§Ù„Ù†Ø¨Ø§Øª Ø³Ù„ÙŠÙ…ØŒ Ù„Ø§ ØªØ·Ø±Ø­ Ø£ÙŠ Ø£Ø³Ø¦Ù„Ø© Ø­ÙˆÙ„ Ø§Ù„Ø¹Ù„Ø§Ø¬." : "7. ÙÙŠ Ù†Ù‡Ø§ÙŠØ© Ø§Ù„Ø±Ø¯ ØªÙ…Ø§Ù…Ø§Ù‹ØŒ ÙŠØ¬Ø¨ Ø£Ù† ØªØ·Ø±Ø­ Ù‡Ø°Ø§ Ø§Ù„Ø³Ø¤Ø§Ù„ Ø§Ù„ØªÙØ§Ø¹Ù„ÙŠ Ø­Ø±ÙÙŠØ§Ù‹ ÙƒÙ…Ø§ Ù‡Ùˆ Ø¨ÙŠÙ† Ø§Ù„Ù‚ÙˆØ³ÙŠÙ†: (Ù‡Ù„ ØªØ­Ø¨ Ø£Ù† ØªØ¹Ø±Ù Ø¥Ø²Ø§ÙŠ ØªØ¹Ø§Ù„Ø¬Ù‡ØŸ)."}
+8. Ù…Ù…Ù†ÙˆØ¹ Ø§Ø³ØªØ®Ø¯Ø§Ù… ÙƒÙ„Ù…Ø§Øª Ø£Ùˆ Ø¹Ø¨Ø§Ø±Ø§Øª Ø§Ù„ØªÙˆØ¯Ø¯ Ø§Ù„Ù…Ø¨Ø§Ù„Øº ÙÙŠÙ‡Ø§ Ø£Ùˆ ØºÙŠØ± Ø§Ù„Ù„Ø§Ø¦Ù‚Ø© Ù…Ø«Ù„: "ÙŠØ§ Ø­Ø¨ÙŠØ¨ÙŠ"ØŒ "ÙŠØ§ Ø­Ø¨ÙŠØ¨ØªÙŠ"ØŒ "ÙŠØ§ Ø¹Ø²ÙŠØ²ØªÙŠ"ØŒ "ÙŠØ§ Ø±ÙˆØ­ÙŠ"ØŒ Ø¥Ù„Ø®.
+9. ØªÙ†Ø¨ÙŠÙ‡ Ù‡Ø§Ù… Ø¬Ø¯Ø§Ù‹: Ø§Ø¨Ø¯Ø£ Ø±Ø¯Ùƒ Ù…Ø¨Ø§Ø´Ø±Ø© Ø¨Ø¯ÙˆÙ† ÙƒØªØ§Ø¨Ø© Ø£ÙŠ ØªÙÙƒÙŠØ± Ø£Ùˆ Ù…Ø³ÙˆØ¯Ø§Øª ØªÙÙƒÙŠØ± (Ù…Ø«Ù„: Thinking Process Ø£Ùˆ ØºÙŠØ±Ù‡Ø§).`
+        : `You are "Flora" â€” a friendly and professional agricultural assistant.
 Response Rules:
 1. Welcome the user warmly and politely.
 2. Tell them the common name of their plant and its health status (whether it is healthy or has the diagnosed disease).
@@ -116,14 +116,14 @@ ${isHealthy ? "5. Note: Since the plant is healthy, do NOT ask any questions abo
 
 
     const dataBlock = isArabic
-        ? `بيانات تشخيص النبات:
-اسم النبات: ${plantAr}
-الحالة/المرض: ${isHealthy ? "سليم ومعافى" : diseaseAr}
-الأعراض الملاحظة: ${analysisResult.symptoms}
-السبب: ${analysisResult.cause}
-التوضيح العلمي: ${analysisResult.explanation}
+        ? `Ø¨ÙŠØ§Ù†Ø§Øª ØªØ´Ø®ÙŠØµ Ø§Ù„Ù†Ø¨Ø§Øª:
+Ø§Ø³Ù… Ø§Ù„Ù†Ø¨Ø§Øª: ${plantAr}
+Ø§Ù„Ø­Ø§Ù„Ø©/Ø§Ù„Ù…Ø±Ø¶: ${isHealthy ? "Ø³Ù„ÙŠÙ… ÙˆÙ…Ø¹Ø§ÙÙ‰" : diseaseAr}
+Ø§Ù„Ø£Ø¹Ø±Ø§Ø¶ Ø§Ù„Ù…Ù„Ø§Ø­Ø¸Ø©: ${analysisResult.symptoms}
+Ø§Ù„Ø³Ø¨Ø¨: ${analysisResult.cause}
+Ø§Ù„ØªÙˆØ¶ÙŠØ­ Ø§Ù„Ø¹Ù„Ù…ÙŠ: ${analysisResult.explanation}
 
-أعد صياغة هذه البيانات للمستخدم بناءً على قواعد الرد السابقة.`
+Ø£Ø¹Ø¯ ØµÙŠØ§ØºØ© Ù‡Ø°Ù‡ Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª Ù„Ù„Ù…Ø³ØªØ®Ø¯Ù… Ø¨Ù†Ø§Ø¡Ù‹ Ø¹Ù„Ù‰ Ù‚ÙˆØ§Ø¹Ø¯ Ø§Ù„Ø±Ø¯ Ø§Ù„Ø³Ø§Ø¨Ù‚Ø©.`
         : `Plant Diagnosis Data:
 Plant Name: ${analysisResult.final_plant}
 Status/Disease: ${isHealthy ? "Healthy" : analysisResult.final_disease}
@@ -158,7 +158,7 @@ Rewrite this diagnosis for the user according to the response rules.`;
     if (!reply) throw new Error("Gemma returned empty response");
 
     if (isArabic && isEnglishText(reply)) {
-        console.warn("[refineWithGemma] ⚠️ Model returned English response instead of Arabic. Triggering Arabic fallback...");
+        console.warn("[refineWithGemma] âš ï¸ Model returned English response instead of Arabic. Triggering Arabic fallback...");
         throw new Error("Model response language mismatch (English instead of Arabic)");
     }
 
@@ -172,77 +172,77 @@ Rewrite this diagnosis for the user according to the response rules.`;
 }
 
 const PLANT_TRANSLATIONS = {
-    "apple": "تفاح",
-    "blueberry": "توت أزرق",
-    "cherry": "كرز",
-    "cherry_(including_sour)": "كرز",
-    "corn": "ذرة",
-    "corn_(maize)": "ذرة",
-    "grape": "عنب",
-    "orange": "برتقال",
-    "peach": "خوخ",
-    "pepper": "فلفل رومي",
-    "pepper,_bell": "فلفل رومي",
-    "potato": "بطاطس",
-    "raspberry": "توت العليق",
-    "soybean": "فول الصويا",
-    "squash": "كوسة",
-    "strawberry": "فراولة",
-    "tomato": "طماطم"
+    "apple": "ØªÙØ§Ø­",
+    "blueberry": "ØªÙˆØª Ø£Ø²Ø±Ù‚",
+    "cherry": "ÙƒØ±Ø²",
+    "cherry_(including_sour)": "ÙƒØ±Ø²",
+    "corn": "Ø°Ø±Ø©",
+    "corn_(maize)": "Ø°Ø±Ø©",
+    "grape": "Ø¹Ù†Ø¨",
+    "orange": "Ø¨Ø±ØªÙ‚Ø§Ù„",
+    "peach": "Ø®ÙˆØ®",
+    "pepper": "ÙÙ„ÙÙ„ Ø±ÙˆÙ…ÙŠ",
+    "pepper,_bell": "ÙÙ„ÙÙ„ Ø±ÙˆÙ…ÙŠ",
+    "potato": "Ø¨Ø·Ø§Ø·Ø³",
+    "raspberry": "ØªÙˆØª Ø§Ù„Ø¹Ù„ÙŠÙ‚",
+    "soybean": "ÙÙˆÙ„ Ø§Ù„ØµÙˆÙŠØ§",
+    "squash": "ÙƒÙˆØ³Ø©",
+    "strawberry": "ÙØ±Ø§ÙˆÙ„Ø©",
+    "tomato": "Ø·Ù…Ø§Ø·Ù…"
 };
 
 const DISEASE_TRANSLATIONS = {
-    "apple_scab": "جرب التفاح",
-    "black_rot": "العفن الأسود",
-    "cedar_apple_rust": "صدأ تفاح الأرز",
-    "powdery_mildew": "البياض الدقيقي",
-    "cercospora_leaf_spot gray_leaf_spot": "بقعة أوراق سيركوسبورا (البقعة الرمادية)",
-    "common_rust_": "الصدأ الشائع",
-    "common_rust": "الصدأ الشائع",
-    "northern_leaf_blight": "لفحة الأوراق الشمالية",
-    "esca_(black_measles)": "مرض الإسكا (الحصبة السوداء)",
-    "leaf_blight_(isariopsis_leaf_spot)": "لفحة الأوراق",
-    "haunglongbing_(citrus_greening)": "اخضرار الحمضيات (التبرقش الأصفر)",
-    "bacterial_spot": "التبقع البكتيري",
-    "early_blight": "اللفحة المبكرة",
-    "late_blight": "اللفحة المتأخرة",
-    "leaf_mold": "عفن الأوراق",
-    "septoria_leaf_spot": "تبقع أوراق السبتوريا",
-    "spider_mites two-spotted_spider_mite": "العنكبوت الأحمر ذو البقعتين",
-    "target_spot": "التبقع المستهدف",
-    "tomato_yellow_leaf_curl_virus": "فيروس تجعد أوراق الطماطم الأصفر",
-    "tomato_mosaic_virus": "فيروس مبرقش الطماطم (الموزايك)",
-    "leaf_scorch": "حرق الأوراق",
-    "healthy": "سليم ومعافى"
+    "apple_scab": "Ø¬Ø±Ø¨ Ø§Ù„ØªÙØ§Ø­",
+    "black_rot": "Ø§Ù„Ø¹ÙÙ† Ø§Ù„Ø£Ø³ÙˆØ¯",
+    "cedar_apple_rust": "ØµØ¯Ø£ ØªÙØ§Ø­ Ø§Ù„Ø£Ø±Ø²",
+    "powdery_mildew": "Ø§Ù„Ø¨ÙŠØ§Ø¶ Ø§Ù„Ø¯Ù‚ÙŠÙ‚ÙŠ",
+    "cercospora_leaf_spot gray_leaf_spot": "Ø¨Ù‚Ø¹Ø© Ø£ÙˆØ±Ø§Ù‚ Ø³ÙŠØ±ÙƒÙˆØ³Ø¨ÙˆØ±Ø§ (Ø§Ù„Ø¨Ù‚Ø¹Ø© Ø§Ù„Ø±Ù…Ø§Ø¯ÙŠØ©)",
+    "common_rust_": "Ø§Ù„ØµØ¯Ø£ Ø§Ù„Ø´Ø§Ø¦Ø¹",
+    "common_rust": "Ø§Ù„ØµØ¯Ø£ Ø§Ù„Ø´Ø§Ø¦Ø¹",
+    "northern_leaf_blight": "Ù„ÙØ­Ø© Ø§Ù„Ø£ÙˆØ±Ø§Ù‚ Ø§Ù„Ø´Ù…Ø§Ù„ÙŠØ©",
+    "esca_(black_measles)": "Ù…Ø±Ø¶ Ø§Ù„Ø¥Ø³ÙƒØ§ (Ø§Ù„Ø­ØµØ¨Ø© Ø§Ù„Ø³ÙˆØ¯Ø§Ø¡)",
+    "leaf_blight_(isariopsis_leaf_spot)": "Ù„ÙØ­Ø© Ø§Ù„Ø£ÙˆØ±Ø§Ù‚",
+    "haunglongbing_(citrus_greening)": "Ø§Ø®Ø¶Ø±Ø§Ø± Ø§Ù„Ø­Ù…Ø¶ÙŠØ§Øª (Ø§Ù„ØªØ¨Ø±Ù‚Ø´ Ø§Ù„Ø£ØµÙØ±)",
+    "bacterial_spot": "Ø§Ù„ØªØ¨Ù‚Ø¹ Ø§Ù„Ø¨ÙƒØªÙŠØ±ÙŠ",
+    "early_blight": "Ø§Ù„Ù„ÙØ­Ø© Ø§Ù„Ù…Ø¨ÙƒØ±Ø©",
+    "late_blight": "Ø§Ù„Ù„ÙØ­Ø© Ø§Ù„Ù…ØªØ£Ø®Ø±Ø©",
+    "leaf_mold": "Ø¹ÙÙ† Ø§Ù„Ø£ÙˆØ±Ø§Ù‚",
+    "septoria_leaf_spot": "ØªØ¨Ù‚Ø¹ Ø£ÙˆØ±Ø§Ù‚ Ø§Ù„Ø³Ø¨ØªÙˆØ±ÙŠØ§",
+    "spider_mites two-spotted_spider_mite": "Ø§Ù„Ø¹Ù†ÙƒØ¨ÙˆØª Ø§Ù„Ø£Ø­Ù…Ø± Ø°Ùˆ Ø§Ù„Ø¨Ù‚Ø¹ØªÙŠÙ†",
+    "target_spot": "Ø§Ù„ØªØ¨Ù‚Ø¹ Ø§Ù„Ù…Ø³ØªÙ‡Ø¯Ù",
+    "tomato_yellow_leaf_curl_virus": "ÙÙŠØ±ÙˆØ³ ØªØ¬Ø¹Ø¯ Ø£ÙˆØ±Ø§Ù‚ Ø§Ù„Ø·Ù…Ø§Ø·Ù… Ø§Ù„Ø£ØµÙØ±",
+    "tomato_mosaic_virus": "ÙÙŠØ±ÙˆØ³ Ù…Ø¨Ø±Ù‚Ø´ Ø§Ù„Ø·Ù…Ø§Ø·Ù… (Ø§Ù„Ù…ÙˆØ²Ø§ÙŠÙƒ)",
+    "leaf_scorch": "Ø­Ø±Ù‚ Ø§Ù„Ø£ÙˆØ±Ø§Ù‚",
+    "healthy": "Ø³Ù„ÙŠÙ… ÙˆÙ…Ø¹Ø§ÙÙ‰"
 };
 
 export function getArabicPlant(engPlant) {
-    if (!engPlant) return "نبات غير معروف";
+    if (!engPlant) return "Ù†Ø¨Ø§Øª ØºÙŠØ± Ù…Ø¹Ø±ÙˆÙ";
     // FIX (Bug 3): Normalize BOTH underscores and spaces so the lookup succeeds
     // regardless of whether the input is "Tomato" (Gemini) or "tomato" (CNN)
     // or "cherry_(including_sour)" (CNN label with underscores).
     const key = engPlant.toLowerCase().trim()
-        .replace(/[\s ]+/g, "_")   // spaces → underscores
+        .replace(/[\sÂ ]+/g, "_")   // spaces â†’ underscores
         .replace(/_+/g, "_")             // collapse repeated underscores
         .replace(/[,\.]/g, "");         // strip stray commas/dots
     return PLANT_TRANSLATIONS[key] || engPlant;
 }
 
 export function getArabicDisease(engDisease) {
-    if (!engDisease) return "حالة غير معروفة";
+    if (!engDisease) return "Ø­Ø§Ù„Ø© ØºÙŠØ± Ù…Ø¹Ø±ÙˆÙØ©";
     // FIX (Bug 3): The CNN model returns names like "Tomato mosaic virus" (spaces)
     // while the dictionary keys use underscores ("tomato_mosaic_virus").
     // The old code only normalized whitespace runs but kept them as spaces,
-    // so the lookup always missed → the raw English name leaked into Arabic replies.
+    // so the lookup always missed â†’ the raw English name leaked into Arabic replies.
     //
     // New strategy: normalize everything to lowercase-with-underscores, matching
     // the DISEASE_TRANSLATIONS key format exactly.
     const normalized = engDisease.toLowerCase().trim()
-        .replace(/[\s \-]+/g, "_")  // spaces/hyphens → underscore
+        .replace(/[\sÂ \-]+/g, "_")  // spaces/hyphens â†’ underscore
         .replace(/_+/g, "_")              // collapse doubles
         .replace(/[,\.]/g, "");          // strip stray commas/dots
 
-    if (normalized.includes("healthy")) return "سليم ومعافى";
+    if (normalized.includes("healthy")) return "Ø³Ù„ÙŠÙ… ÙˆÙ…Ø¹Ø§ÙÙ‰";
 
     // Direct lookup first
     if (DISEASE_TRANSLATIONS[normalized]) return DISEASE_TRANSLATIONS[normalized];
@@ -251,7 +251,7 @@ export function getArabicDisease(engDisease) {
     const withSpaces = normalized.replace(/_/g, " ");
     if (DISEASE_TRANSLATIONS[withSpaces]) return DISEASE_TRANSLATIONS[withSpaces];
 
-    // Partial match fallback — catches sub-strings like "spider_mites" from a longer label
+    // Partial match fallback â€” catches sub-strings like "spider_mites" from a longer label
     for (const [dictKey, arabicVal] of Object.entries(DISEASE_TRANSLATIONS)) {
         if (normalized.includes(dictKey) || dictKey.includes(normalized)) {
             return arabicVal;
@@ -261,40 +261,30 @@ export function getArabicDisease(engDisease) {
     return engDisease; // last resort: return the original (will be English, but avoids silence)
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // GEMINI MULTIMODAL FALLBACK
-// ══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 export async function predictPlantDiseaseWithGemini(imageBuffer, mimeType) {
     console.log("[Gemini Multimodal Fallback] Analyzing image directly...");
     const base64Data = imageBuffer.toString("base64");
-    
+
     let cleanMimeType = mimeType;
     if (!cleanMimeType || !cleanMimeType.startsWith("image/")) {
         cleanMimeType = "image/jpeg";
     }
-    
+    console.log(`[Gemini Multimodal] Image base64 length: ${base64Data.length}, MIME: ${cleanMimeType}`);
+
+    const jsonInstruction = 'Respond with ONLY a raw JSON object (no markdown, no code fences):\n{"plant":"PlantName","disease":"DiseaseName","confidence":75,"symptoms":"symptoms","cause":"cause","explanation":"explanation"}\nplant: one of Tomato, Apple, Grape, Peach, Pepper, Potato, Strawberry, Cherry, Corn, Blueberry, Orange, Raspberry, Soybean, Squash\ndisease: exact name or "healthy"\nconfidence: integer 50-99\nAll fields non-empty strings.';
+
     const response = await axios.post(
         `${GEMMA_BASE_URL}/chat/completions`,
         {
             model: GEMMA_MODEL,
             messages: [
                 {
-                    role: "system",
-                    content: `You are an expert plant disease classifier. Analyze the provided image of a plant leaf and return a JSON object with the following fields:
-{
-  "plant": "Plant name in English (e.g. Tomato, Apple, Grape, Peach, Pepper, Potato, Strawberry, Cherry, Corn)",
-  "disease": "Disease name in English (e.g. Early blight, Late blight, Black rot, Rust, Scab, or 'healthy')",
-  "confidence": integer percentage between 50 and 99,
-  "symptoms": "Description of the symptoms",
-  "cause": "Cause of the disease",
-  "explanation": "Scientific explanation of the disease"
-}
-Ensure the output is valid JSON and nothing else.`
-                },
-                {
                     role: "user",
                     content: [
-                        { type: "text", text: "Analyze this plant leaf." },
+                        { type: "text", text: `You are an expert plant pathologist. Analyze this plant leaf image.\n${jsonInstruction}` },
                         {
                             type: "image_url",
                             image_url: {
@@ -304,50 +294,62 @@ Ensure the output is valid JSON and nothing else.`
                     ]
                 }
             ],
-            response_format: { type: "json_object" },
-            temperature: 0.2
+            temperature: 0.1,
+            max_tokens: 400
         },
         {
             headers: {
                 "Content-Type": "application/json",
                 ...(GEMMA_API_KEY ? { "Authorization": `Bearer ${GEMMA_API_KEY}` } : {})
             },
-            timeout: 30000
+            timeout: 45000
         }
     );
 
     const content = response.data?.choices?.[0]?.message?.content?.trim();
+    console.log("[Gemini Multimodal] Raw response:", content ? content.substring(0, 300) : "EMPTY");
     if (!content) throw new Error("Gemini returned empty response for image analysis");
-    
-    const parsed = JSON.parse(content);
+
+    // Extract JSON - handle markdown code fences if present
+    let jsonStr = content;
+    const fenceMatch = content.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+    if (fenceMatch) {
+        jsonStr = fenceMatch[1].trim();
+    } else {
+        const objMatch = content.match(/\{[\s\S]*\}/);
+        if (objMatch) jsonStr = objMatch[0];
+    }
+
+    const parsed = JSON.parse(jsonStr);
+    console.log("[Gemini Multimodal] Parsed:", JSON.stringify(parsed));
     return {
-        plant: parsed.plant || "Unknown",
-        disease: parsed.disease || "Unknown",
-        confidence: parsed.confidence || 75,
-        symptoms: parsed.symptoms || "N/A",
-        cause: parsed.cause || "N/A",
+        plant:       parsed.plant       || "Unknown",
+        disease:     parsed.disease     || "Unknown",
+        confidence:  parsed.confidence  || 75,
+        symptoms:    parsed.symptoms    || "N/A",
+        cause:       parsed.cause       || "N/A",
         explanation: parsed.explanation || "N/A"
     };
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // ORCHESTRATOR
-// ══════════════════════════════════════════════════════════════════════════════
+// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 export async function processPlantAnalysis({ imageBuffer, mimeType, userQuestion = "", lang = "ar", res = null }) {
     const _debug = { layers_failed: [], gemma_used: false };
 
-    // Layer 1 — CNN
+    // Layer 1 â€” CNN
     let cnnResult;
     try {
         cnnResult = await predictPlantDisease(imageBuffer);
-        console.log("[AI Pipeline] ✅ Layer 1 (CNN):", cnnResult);
+        console.log("[AI Pipeline] âœ… Layer 1 (CNN):", cnnResult);
     } catch (err) {
-        console.error("[AI Pipeline] ❌ Layer 1 (CNN) failed, attempting Gemini multimodal fallback...", err.message);
+        console.error("[AI Pipeline] âŒ Layer 1 (CNN) failed, attempting Gemini multimodal fallback...", err.message);
         _debug.layers_failed.push("cnn");
         
         try {
             const geminiResult = await predictPlantDiseaseWithGemini(imageBuffer, mimeType);
-            console.log("[AI Pipeline] ✅ Gemini Multimodal Fallback Success:", geminiResult);
+            console.log("[AI Pipeline] âœ… Gemini Multimodal Fallback Success:", geminiResult);
             cnnResult = {
                 plant: geminiResult.plant,
                 disease: geminiResult.disease,
@@ -357,7 +359,7 @@ export async function processPlantAnalysis({ imageBuffer, mimeType, userQuestion
                 explanation: geminiResult.explanation
             };
         } catch (fallbackErr) {
-            console.error("[AI Pipeline] ❌ Gemini Multimodal Fallback failed too:", fallbackErr.message);
+            console.error("[AI Pipeline] âŒ Gemini Multimodal Fallback failed too:", fallbackErr.message);
             if (fallbackErr.response) {
                 console.error("[AI Pipeline] Fallback error status:", fallbackErr.response.status);
                 console.error("[AI Pipeline] Fallback error data:", JSON.stringify(fallbackErr.response.data));
@@ -378,7 +380,7 @@ export async function processPlantAnalysis({ imageBuffer, mimeType, userQuestion
         explanation: cnnResult.explanation || "N/A"
     };
 
-    // Layer 2 — Gemma
+    // Layer 2 â€” Gemma
     let finalExplanation;
     let modelUsed = "pipeline";
     const isHealthy = analysisResult.final_disease.toLowerCase().includes("healthy");
@@ -388,9 +390,9 @@ export async function processPlantAnalysis({ imageBuffer, mimeType, userQuestion
         finalExplanation = await refineWithGemma(analysisResult, userQuestion, lang);
         _debug.gemma_used = true;
         modelUsed = "gemma";
-        console.log("[AI Pipeline] ✅ Layer 2 (Gemma): done");
+        console.log("[AI Pipeline] âœ… Layer 2 (Gemma): done");
     } catch (err) {
-        console.warn("[AI Pipeline] ⚠️ Layer 2 (Gemma) failed:", err.message);
+        console.warn("[AI Pipeline] âš ï¸ Layer 2 (Gemma) failed:", err.message);
         if (err.response) {
             console.warn("[AI Pipeline] Layer 2 error status:", err.response.status);
             console.warn("[AI Pipeline] Layer 2 error data:", JSON.stringify(err.response.data));
@@ -401,10 +403,10 @@ export async function processPlantAnalysis({ imageBuffer, mimeType, userQuestion
         const plantAr = getArabicPlant(analysisResult.final_plant);
 
         if (isHealthy) {
-            finalExplanation = `أهلاً بيك! أنا فلورا. 🌿\nبناءً على تحليلي، النبتة اللي بعتها هي **${plantAr}** وهي **سليمة ومعافاة** وبصحة جيدة جداً.\n\nشكلها ممتاز وبتنمو بشكل طبيعي. حافظ عليها واسقيها بانتظام لتفضل دايماً خضراء وجميلة!`;
+            finalExplanation = `Ø£Ù‡Ù„Ø§Ù‹ Ø¨ÙŠÙƒ! Ø£Ù†Ø§ ÙÙ„ÙˆØ±Ø§. ðŸŒ¿\nØ¨Ù†Ø§Ø¡Ù‹ Ø¹Ù„Ù‰ ØªØ­Ù„ÙŠÙ„ÙŠØŒ Ø§Ù„Ù†Ø¨ØªØ© Ø§Ù„Ù„ÙŠ Ø¨Ø¹ØªÙ‡Ø§ Ù‡ÙŠ **${plantAr}** ÙˆÙ‡ÙŠ **Ø³Ù„ÙŠÙ…Ø© ÙˆÙ…Ø¹Ø§ÙØ§Ø©** ÙˆØ¨ØµØ­Ø© Ø¬ÙŠØ¯Ø© Ø¬Ø¯Ø§Ù‹.\n\nØ´ÙƒÙ„Ù‡Ø§ Ù…Ù…ØªØ§Ø² ÙˆØ¨ØªÙ†Ù…Ùˆ Ø¨Ø´ÙƒÙ„ Ø·Ø¨ÙŠØ¹ÙŠ. Ø­Ø§ÙØ¸ Ø¹Ù„ÙŠÙ‡Ø§ ÙˆØ§Ø³Ù‚ÙŠÙ‡Ø§ Ø¨Ø§Ù†ØªØ¸Ø§Ù… Ù„ØªÙØ¶Ù„ Ø¯Ø§ÙŠÙ…Ø§Ù‹ Ø®Ø¶Ø±Ø§Ø¡ ÙˆØ¬Ù…ÙŠÙ„Ø©!`;
         } else {
             const diseaseAr = getArabicDisease(analysisResult.final_disease);
-            finalExplanation = `أهلاً بيك! أنا فلورا. 🌿\nبناءً على تحليلي، النبتة اللي بعتها هي **${plantAr}** ومصابة بـ **${diseaseAr}**.\n\nالمرض ده ممكن يأثر على صحة النبات وينتشر لباقي الأوراق بسرعة لو متدخلناش، بس متقلقش كل مشكلة وليها حل.\n\n(هل تحب أن تعرف إزاي تعالجه؟)`;
+            finalExplanation = `Ø£Ù‡Ù„Ø§Ù‹ Ø¨ÙŠÙƒ! Ø£Ù†Ø§ ÙÙ„ÙˆØ±Ø§. ðŸŒ¿\nØ¨Ù†Ø§Ø¡Ù‹ Ø¹Ù„Ù‰ ØªØ­Ù„ÙŠÙ„ÙŠØŒ Ø§Ù„Ù†Ø¨ØªØ© Ø§Ù„Ù„ÙŠ Ø¨Ø¹ØªÙ‡Ø§ Ù‡ÙŠ **${plantAr}** ÙˆÙ…ØµØ§Ø¨Ø© Ø¨Ù€ **${diseaseAr}**.\n\nØ§Ù„Ù…Ø±Ø¶ Ø¯Ù‡ Ù…Ù…ÙƒÙ† ÙŠØ£Ø«Ø± Ø¹Ù„Ù‰ ØµØ­Ø© Ø§Ù„Ù†Ø¨Ø§Øª ÙˆÙŠÙ†ØªØ´Ø± Ù„Ø¨Ø§Ù‚ÙŠ Ø§Ù„Ø£ÙˆØ±Ø§Ù‚ Ø¨Ø³Ø±Ø¹Ø© Ù„Ùˆ Ù…ØªØ¯Ø®Ù„Ù†Ø§Ø´ØŒ Ø¨Ø³ Ù…ØªÙ‚Ù„Ù‚Ø´ ÙƒÙ„ Ù…Ø´ÙƒÙ„Ø© ÙˆÙ„ÙŠÙ‡Ø§ Ø­Ù„.\n\n(Ù‡Ù„ ØªØ­Ø¨ Ø£Ù† ØªØ¹Ø±Ù Ø¥Ø²Ø§ÙŠ ØªØ¹Ø§Ù„Ø¬Ù‡ØŸ)`;
         }
     }
 
