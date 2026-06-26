@@ -138,17 +138,13 @@ signUpForm.onsubmit = async (e) => {
     const result = await response.json();
 
     if (response.ok) {
-      // ✅ بنحفظ الـ email عشان نستخدمه في صفحة الـ confirm email
-      localStorage.setItem("userEmailForVerification", formData.email);
-
       showToast(
-        lang === 'ar' ? "تم إنشاء الحساب بنجاح! تحقق من بريدك" : result.message || "Account created! Check your email.",
+        lang === 'ar' ? "تم إنشاء الحساب بنجاح! جاري تحويلك لصفحة تسجيل الدخول" : "Account created successfully! Redirecting to login...",
         "success"
       );
 
-      // ✅ صحّحنا اسم الملف (كان فيه نقطتين confirm.email..html)
       setTimeout(() => {
-        window.location.href = "../confirm-email/confirm-email.html";
+        window.location.href = "../login/login.html";
       }, 2000);
 
     } else {
