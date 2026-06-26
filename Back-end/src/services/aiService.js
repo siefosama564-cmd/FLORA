@@ -145,6 +145,7 @@ Rewrite this diagnosis for the user according to the response rules.`;
             max_tokens: 1200, // FIX (Image 2): 550 caused Arabic responses to truncate mid-sentence
             stream: false
         },
+        {
             headers: { 
                 "Content-Type": "application/json",
                 ...(GEMMA_API_KEY ? { "Authorization": `Bearer ${GEMMA_API_KEY}` } : {})
@@ -306,6 +307,7 @@ Ensure the output is valid JSON and nothing else.`
             response_format: { type: "json_object" },
             temperature: 0.2
         },
+        {
             headers: {
                 "Content-Type": "application/json",
                 ...(GEMMA_API_KEY ? { "Authorization": `Bearer ${GEMMA_API_KEY}` } : {})
