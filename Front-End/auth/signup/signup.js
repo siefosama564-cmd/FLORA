@@ -1,5 +1,9 @@
 const html = document.documentElement;
 
+const API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+    ? "http://127.0.0.1:3000/api/v1"
+    : "https://flora-pearl.vercel.app/api/v1";
+
 // --- 1. Theme Logic ---
 const savedTheme = localStorage.getItem('flora-theme') || 'dark';
 html.setAttribute('data-theme', savedTheme);
@@ -125,7 +129,7 @@ signUpForm.onsubmit = async (e) => {
   submitBtn.style.opacity = "0.7";
 
   try {
-    const response = await fetch("http://127.0.0.1:3000/api/v1/auth/signup", {
+    const response = await fetch(`${API_BASE}/auth/signup`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
