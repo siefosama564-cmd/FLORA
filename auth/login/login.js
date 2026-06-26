@@ -177,15 +177,23 @@ document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
         } else {
             const msg = result.message || '';
             const friendly = lang === 'ar'
-                ? (msg.includes('not found') ? 'البريد الإلكتروني غير مسجل'
+                ? (msg.includes('confirm') ? 'يرجى تأكيد بريدك الإلكتروني أولاً (جاري تحويلك لصفحة التفعيل...)'
+                    : msg.includes('not found') ? 'البريد الإلكتروني غير مسجل'
                     : msg.includes('wrong') ? 'كلمة المرور خاطئة'
-                    : msg.includes('confirm') ? 'يرجى تأكيد بريدك الإلكتروني أولاً'
                     : msg || 'بيانات غير صحيحة')
-                : (msg.includes('not found') ? 'Email not registered'
+                : (msg.includes('confirm') ? 'Please confirm your email first (Redirecting to verification page...)'
+                    : msg.includes('not found') ? 'Email not registered'
                     : msg.includes('wrong') ? 'Wrong password'
-                    : msg.includes('confirm') ? 'Please confirm your email first'
                     : msg || 'Invalid credentials');
+            
             showFormError(friendly);
+
+            if (msg.includes('confirm')) {
+                localStorage.setItem("userEmailForVerification", email);
+                setTimeout(() => {
+                    window.location.href = "../confirm-email/confirm-email.html";
+                }, 2000);
+            }
         }
 
     } catch {
