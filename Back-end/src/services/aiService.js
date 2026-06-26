@@ -266,6 +266,11 @@ export async function predictPlantDiseaseWithGemini(imageBuffer, mimeType) {
     console.log("[Gemini Multimodal Fallback] Analyzing image directly...");
     const base64Data = imageBuffer.toString("base64");
     
+    let cleanMimeType = mimeType;
+    if (!cleanMimeType || !cleanMimeType.startsWith("image/")) {
+        cleanMimeType = "image/jpeg";
+    }
+    
     const response = await axios.post(
         `${GEMMA_BASE_URL}/chat/completions`,
         {
@@ -291,7 +296,7 @@ Ensure the output is valid JSON and nothing else.`
                         {
                             type: "image_url",
                             image_url: {
-                                url: `data:${mimeType || "image/jpeg"};base64,${base64Data}`
+                                url: `data:${cleanMimeType};base64,${base64Data}`
                             }
                         }
                     ]
