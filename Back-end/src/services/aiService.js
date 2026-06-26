@@ -260,6 +260,70 @@ export function getArabicDisease(engDisease) {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
+// GEMINI MULTIMODAL FALLBACK
+// ══════════════════════════════════════════════════════════════════════════════
+export async function predictPlantDiseaseWithGemini(imageBuffer, mimeType) {
+    console.log("[Gemini Multimodal Fallback] Analyzing image directly...");
+    const base64Data = imageBuffer.toString("base64");
+    
+    const response = await axios.post(
+        `${GEMMA_BASE_URL}/chat/completions`,
+        {
+            model: GEMMA_MODEL,
+            messages: [
+                {
+                    role: "system",
+                    content: `You are an expert plant disease classifier. Analyze the provided image of a plant leaf and return a JSON object with the following fields:
+{
+  "plant": "Plant name in English (e.g. Tomato, Apple, Grape, Peach, Pepper, Potato, Strawberry, Cherry, Corn)",
+  "disease": "Disease name in English (e.g. Early blight, Late blight, Black rot, Rust, Scab, or 'healthy')",
+  "confidence": integer percentage between 50 and 99,
+  "symptoms": "Description of the symptoms",
+  "cause": "Cause of the disease",
+  "explanation": "Scientific explanation of the disease"
+}
+Ensure the output is valid JSON and nothing else.`
+                },
+                {
+                    role: "user",
+                    content: [
+                        { type: "text", text: "Analyze this plant leaf." },
+                        {
+                            type: "image_url",
+                            image_url: {
+                                url: `data:${mimeType || "image/jpeg"};base64,${base64Data}`
+                            }
+                        }
+                    ]
+                }
+            ],
+            response_format: { type: "json_object" },
+            temperature: 0.2
+        },
+        {
+            headers: {
+                "Content-Type": "application/json",
+                ...(process.env.GEMMA_API_KEY ? { "Authorization": `Bearer ${process.env.GEMMA_API_KEY}` } : {})
+            },
+            timeout: 30000
+        }
+    );
+
+    const content = response.data?.choices?.[0]?.message?.content?.trim();
+    if (!content) throw new Error("Gemini returned empty response for image analysis");
+    
+    const parsed = JSON.parse(content);
+    return {
+        plant: parsed.plant || "Unknown",
+        disease: parsed.disease || "Unknown",
+        confidence: parsed.confidence || 75,
+        symptoms: parsed.symptoms || "N/A",
+        cause: parsed.cause || "N/A",
+        explanation: parsed.explanation || "N/A"
+    };
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
 // ORCHESTRATOR
 // ══════════════════════════════════════════════════════════════════════════════
 export async function processPlantAnalysis({ imageBuffer, mimeType, userQuestion = "", lang = "ar", res = null }) {
@@ -271,20 +335,36 @@ export async function processPlantAnalysis({ imageBuffer, mimeType, userQuestion
         cnnResult = await predictPlantDisease(imageBuffer);
         console.log("[AI Pipeline] ✅ Layer 1 (CNN):", cnnResult);
     } catch (err) {
-        console.error("[AI Pipeline] ❌ Layer 1 (CNN):", err.message);
+        console.error("[AI Pipeline] ❌ Layer 1 (CNN) failed, attempting Gemini multimodal fallback...", err.message);
         _debug.layers_failed.push("cnn");
-        cnnResult = { label: "Unknown_Unknown", plant: "Unknown", disease: "Unknown", confidence: 0 };
+        
+        try {
+            const geminiResult = await predictPlantDiseaseWithGemini(imageBuffer, mimeType);
+            console.log("[AI Pipeline] ✅ Gemini Multimodal Fallback Success:", geminiResult);
+            cnnResult = {
+                plant: geminiResult.plant,
+                disease: geminiResult.disease,
+                confidence: geminiResult.confidence,
+                symptoms: geminiResult.symptoms,
+                cause: geminiResult.cause,
+                explanation: geminiResult.explanation
+            };
+        } catch (fallbackErr) {
+            console.error("[AI Pipeline] ❌ Gemini Multimodal Fallback failed too:", fallbackErr.message);
+            _debug.layers_failed.push("gemini_multimodal");
+            cnnResult = { label: "Unknown_Unknown", plant: "Unknown", disease: "Unknown", confidence: 0 };
+        }
     }
 
-    // Prepare analysis result directly from CNN
+    // Prepare analysis result directly from CNN or Gemini fallback
     const analysisResult = {
         final_plant: cnnResult.plant || "Unknown",
         final_disease: cnnResult.disease || "Unknown",
         confidence: cnnResult.confidence || 0,
-        symptoms: "N/A",
-        cause: "N/A",
+        symptoms: cnnResult.symptoms || "N/A",
+        cause: cnnResult.cause || "N/A",
         treatment: "N/A",
-        explanation: "N/A"
+        explanation: cnnResult.explanation || "N/A"
     };
 
     // Layer 2 — Gemma
