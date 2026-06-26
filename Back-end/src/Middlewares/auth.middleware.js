@@ -1,5 +1,5 @@
 import * as dbService from "../DB/dbService.js";
-import { tokenModel } from "../DB/models/token.model.js";
+import { tokenModel } from "../DB/Models/token.model.js";
 
 
 import mongoose from "mongoose";

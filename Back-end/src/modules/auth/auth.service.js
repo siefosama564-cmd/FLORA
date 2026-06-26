@@ -8,7 +8,7 @@ import { successResponse } from "../../utils/successResponse.js";
 
 import { userModel } from "../../DB/Models/user.model.js";
 import { getNewLoginCredientials } from "../../utils/token/token.utils.js";
-import { tokenModel } from "../../DB/models/token.model.js";
+import { tokenModel } from "../../DB/Models/token.model.js";
 import {
   decodedToken,
   tokenTypeEnum,
