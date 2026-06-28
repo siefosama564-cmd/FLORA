@@ -17,8 +17,12 @@ import { successResponse } from "../../utils/successResponse.js";
 import axios            from "axios";
 
 // ── Config ──────────────────────────────────────────────────────────────────
-const GEMMA_BASE_URL = process.env.GEMMA_BASE_URL || "http://localhost:1234/v1";
-const GEMMA_MODEL    = process.env.GEMMA_MODEL    || "gemma-3-4b-it";
+const GEMMA_BASE_URL = process.env.GEMMA_BASE_URL || "https://generativelanguage.googleapis.com/v1beta/openai";
+let GEMMA_MODEL      = process.env.GEMMA_MODEL    || "gemini-2.5-flash";
+if (GEMMA_MODEL === "gemini-1.5-flash" || GEMMA_MODEL === "gemma-3-4b-it" || GEMMA_MODEL === "gemma-4") {
+    GEMMA_MODEL = "gemini-2.5-flash";
+}
+const GEMMA_API_KEY  = process.env.GEMINI_API_KEY || process.env.GEMMA_API_KEY || "";
 
 // ── Language detection helper ────────────────────────────────────────────────
 function detectLanguage(text) {
@@ -68,7 +72,7 @@ export const sendMessage = async (req, res, next) => {
             {
                 headers: {
                     "Content-Type": "application/json",
-                    ...(process.env.GEMMA_API_KEY ? { "Authorization": `Bearer ${process.env.GEMMA_API_KEY}` } : {})
+                    ...(GEMMA_API_KEY ? { "Authorization": `Bearer ${GEMMA_API_KEY}` } : {})
                 },
                 timeout: 45000
             }

@@ -17,11 +17,10 @@ const router = Router();
 
 const GEMMA_BASE_URL = process.env.GEMMA_BASE_URL || "https://generativelanguage.googleapis.com/v1beta/openai";
 let GEMMA_MODEL      = process.env.GEMMA_MODEL    || "gemini-2.5-flash";
-if (GEMMA_MODEL === "gemini-1.5-flash" || GEMMA_MODEL === "gemma-3-4b-it") {
+if (GEMMA_MODEL === "gemini-1.5-flash" || GEMMA_MODEL === "gemma-3-4b-it" || GEMMA_MODEL === "gemma-4") {
     GEMMA_MODEL = "gemini-2.5-flash";
 }
-const _k1 = "AQ.Ab8R"; const _k2 = "N6IJoJTN"; const _k3 = "RTAIdYWL_5Ke6qc"; const _k4 = "NW_vQTdLj63U6_vZwcGPNdg";
-const GEMMA_API_KEY  = process.env.GEMMA_API_KEY  || (_k1 + _k2 + _k3 + _k4);
+const GEMMA_API_KEY  = process.env.GEMINI_API_KEY || process.env.GEMMA_API_KEY || "";
 const GEMMA_TIMEOUT  = parseInt(process.env.AI_TIMEOUT) || 90_000;
 
 const chatUpload = multer({
@@ -196,6 +195,7 @@ router.post("/ask", authentication(), chatUpload.single("image"), async (req, re
     const userId = req.user?._id;
     if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
+
     const { message, conversationId } = req.body;
 
     // ── Language detection with history fallback ──────────────────────────
@@ -256,6 +256,7 @@ router.post("/ask", authentication(), chatUpload.single("image"), async (req, re
     // IMAGE REQUEST — Buffer-then-Stream
     // ══════════════════════════════════════════════════════════════════════
     if (req.file) {
+
         _setSseHeaders(res);
         try {
             console.log("[chat.controller] 🖼️  Running plant analysis pipeline...");
