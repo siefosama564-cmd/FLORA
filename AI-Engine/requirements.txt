@@ -3,4 +3,5 @@ tensorflow-cpu
 pillow
 numpy
 rembg
+onnxruntime
 gunicorn
